@@ -7,9 +7,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.action.Action;
 import net.action.ActionForward;
-import net.funding.db.fundingDAO;
+import net.funding.db.FundingDAO;
 import net.funding.open.db.RequirementsBean;
-import net.funding.open.db.fundingOpenDAO;
+import net.funding.open.db.FundingOpenDAO;
 
 public class BasicRequireRegAction implements Action {
 
@@ -32,42 +32,31 @@ public class BasicRequireRegAction implements Action {
 		require.setFundingId(Integer.parseInt(fundingId));
 		
 		String cmd = request.getParameter("cmd");
-		System.out.println("cmd: " + cmd);
+		int result = 0; 
+		String Message = "";
+		
 		if(cmd.equals("register")) {
-			
-			int result = new fundingOpenDAO().insertRequirement(require);
-			if(result == 0) {
-				response.setContentType("text/html; charset=UTF-8");
-				PrintWriter out=response.getWriter();
-				out.println("<script>");
-				out.println("alert('기본 요건 등록에 실패하였습니다.');");
-				out.println("history.back();");
-				out.println("</script>");
-				out.close();
-				return null;
-			}
-			
-			request.setAttribute("bean", require);
-			request.setAttribute("mode", "update");
-			
+			result = new FundingOpenDAO().insertRequirement(require);
+			Message = "등록";
 		}else if(cmd.equals("update")){
-			System.out.println();
-			int result = new fundingOpenDAO().updateRequirment(require);
-			if(result == 0) {
-				response.setContentType("text/html; charset=UTF-8");
-				PrintWriter out=response.getWriter();
-				out.println("<script>");
-				out.println("alert('기본 요건 수정에 실패하였습니다.');");
-				out.println("history.back();");
-				out.println("</script>");
-				out.close();
-				return null;
-			}
-			
-			request.setAttribute("bean", require);
-			request.setAttribute("mode", "view");
+			result = new FundingOpenDAO().updateRequirment(require);
+			Message = "수정";
 		}
-
+		
+		if(result == 0) {
+			response.setContentType("text/html; charset=UTF-8");
+			PrintWriter out=response.getWriter();
+			out.println("<script>");
+			out.println("alert('기본 요건 "+Message+"에 실패하였습니다.');");
+			out.println("history.back();");
+			out.println("</script>");
+			out.close();
+			return null;
+		}
+		
+		request.setAttribute("bean", require);
+		request.setAttribute("fundingId", fundingId);
+		request.setAttribute("mode", "update");
 		
 		ActionForward forward = new ActionForward();	
 		forward.setRedirect(false);

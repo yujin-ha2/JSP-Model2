@@ -45,12 +45,15 @@ public class MemberLoginAction implements Action {
 		}
 		
 		//check==1 로그인 성공
+		String authority = new MemberDAO().getUserAuthority(id);
+		System.out.println("사용자 권환: " + authority);
 		HttpSession session=request.getSession(); //세션객체 생성
 		session.setAttribute("id", id);
+		session.setAttribute("authority", authority);
 		
 		ActionForward forward=new ActionForward();	
 		forward.setRedirect(true);
-		forward.setPath("./Main.me"); 
+		forward.setPath("main.do"); 
 		return forward;
 		
 	}

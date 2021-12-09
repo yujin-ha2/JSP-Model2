@@ -1,87 +1,70 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>나의 펀딩</title>
-    
-	<link rel="icon" href="img/Fevicon.png" type="image/png">
-    <link rel="stylesheet" href="vendors/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="vendors/fontawesome/css/all.min.css">
-	<link rel="stylesheet" href="vendors/themify-icons/themify-icons.css">
-	<link rel="stylesheet" href="vendors/linericon/style.css">
-    <link rel="stylesheet" href="vendors/owl-carousel/owl.theme.default.min.css">
-    <link rel="stylesheet" href="vendors/owl-carousel/owl.carousel.min.css">
-    <link rel="stylesheet" href="vendors/nice-select/nice-select.css">
-    <link rel="stylesheet" href="vendors/nouislider/nouislider.min.css">
-     	
-    <link rel="stylesheet" href="css/style.css"> 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    
-    <script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>GoodFunding</title>
+  <c:set var="contextPath" value="${pageContext.request.contextPath}/aroma"/>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+  <%-- <link rel="stylesheet" href="${contextPath}/vendors/fontawesome/css/all.min.css"> --%>
+  <link rel="stylesheet" href="${contextPath}/vendors/themify-icons/themify-icons.css">
+  <link rel="stylesheet" href="${contextPath}/css/style.css"> 
 </head>
 <body>
-<% 
-	//세션id값 전달받기 
-	String id=(String)session.getAttribute("id");
-%>
 <jsp:include page="../top1.jsp" />
-  	  
-  <!--================Order Details Area =================-->
-   <section class="order_details section-margin--small">
-    <div class="container">    	
-      <div class="row mb-5">
-    	  <div class="col-md-12">
-    	  	<div class="my_funding">
-    	  	  	<h2>나의 펀딩</h2>  	                
-	        </div>
-	        <hr>
-	        <div class="row mb-5">
-	        	<div class="col-md-12">
-	        	<!-- Example single danger button -->
-					<div class="btn-group" style="float: right;">
-					  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="true">
-					    Action
-					  </button>
-					  <ul class="dropdown-menu">
-					    <li><a class="dropdown-item" href="#">전체</a></li>
-					    <li><a class="dropdown-item" href="#">결제 예약</a></li>
-					    <li><a class="dropdown-item" href="#">결제 완료</a></li>					    
-					    <li><a class="dropdown-item" href="#">취소 / 실패</a></li>
-					  </ul>
-					</div>
-	        	</div>
-	        </div> 
-	         
-          </div> <!-- col-md-12 -->          	     
-      </div> <!-- row mb-5 끝 -->                    	
-	  <div class="row mb-5">
-	      <div class="col-md-12" style="text-align: center; display: block;">
-	      	<p id="body_font"><b>펀딩 프로젝트에 참여한 내역이 없습니다.<br>
-	      		                              지금 바로 펀딩 프로젝트를 둘러보세요!</b><br><br>
-	      		
-	      		<span class="dp-ib"><a href="#"><strong>펀딩 프로젝트 바로가기</strong> <i class="fas fa-angle-right"></i></a></span>
-	      	</p>		
-		  </div>
-	   </div>	
-    </div>
+	
+    <section class="order_details section-margin--small">
+	    <div class="maincontainer" style="padding: 0 120px;">
+    		<h2 style="font-size: 32px; padding: 56px 40px 24px;">나의 펀딩 내역</h2>    	
+            <div style="border-top: 1px solid rgb(0 0 0 / 20%); padding: 40px 40px;">
+            	<c:if test="${empty historyList}">
+            		<div style="padding:50px 0; text-align: center; display: block;">
+	      				<p><b>펀딩 프로젝트에 참여한 내역이 없습니다.<br>지금 바로 펀딩 프로젝트를 둘러보세요!</b></p>
+	      				<p>
+		      			<span class="dp-ib"><a href="#"><strong>펀딩 프로젝트 바로가기</strong> <i class="fas fa-angle-right"></i></a></span>
+	      				</p>		
+		  			</div>
+            	</c:if>
+            	<ul style="width: 100%; max-width:1500px;">
+            		<c:forEach var="history" items="${historyList}">
+	            		<li style="margin-bottom: 16px;">
+	            			<a href="MyFundingHistoryInfo.me?orderId=${history.orderId}&fundingId=${history.fundingId}" style="width: 100%;">
+	            				<dl style="background:#fff; box-shadow: 0 0 1px 0 rgb(0 0 0 / 40%);">
+	            					<dt style="position: relative; padding: 20px 20px 0; font-size: 12px; letter-spacing: -.02em; line-height: 16px;">
+										<fmt:formatDate var="orderDate" value="${history.orderDate}" pattern="yyyy.MM.dd"/>
+	            						<em style="padding-right: 6px; color: #90949c; font-style: normal;">펀딩  / ${history.categoryNm}</em>
+	            						<em style="position: absolute; right: 20px; color: #90949c; font-style: normal;">${orderDate} 펀딩</em>
+	            					</dt>
+	            					<dd style="padding: 10px 20px;">
+	            						<p style="padding-bottom: 4px; font-size: 12px; line-height: 18px; font-weight:600; letter-spacing: -.02em; color: #90949c; margin-bottom: 5px;">
+	            							${history.statusNm}
+	            						</p>
+	            						<p style="padding-bottom: 4px; margin-bottom: 5px; font-size: 19px; font-weight: 500; line-height: 24px; letter-spacing: -.02em; color: #44484b;">
+	            							${history.title}
+	            						</p>
+	            						<p style="margin-bottom: 5px; font-size: 12px; line-height: 18px; letter-spacing: -.02em; color: #90949c">by ${history.makerName}</p>
+	            						<p style="margin-bottom: 0;">
+	            							<c:set var="reservationStatus" value="결제 완료"/>
+	            							<c:if test="${history.cancel == 1}"><c:set var="reservationStatus" value="결제 예약취소"/></c:if>
+	            							<em style="font-size: 15px; line-height: 20px; color: #557CF2; font-weight: 500; font-style: normal;">${reservationStatus}</em>
+	            						</p>
+	            					</dd>
+	            				</dl>
+	            			</a>
+	            		</li>
+	            	</c:forEach>
+            	</ul>  
+            </div>
+    	</div>
   </section>
-  <!--================End Order Details Area =================-->
-
 
 <jsp:include page="../bottom.jsp" />
 
-
-  <script src="vendors/jquery/jquery-3.2.1.min.js"></script>
-  <script src="vendors/bootstrap/bootstrap.bundle.min.js"></script>
-  <script src="vendors/skrollr.min.js"></script>
-  <script src="vendors/owl-carousel/owl.carousel.min.js"></script>
-  <script src="vendors/nice-select/jquery.nice-select.min.js"></script>
-  <script src="vendors/jquery.ajaxchimp.min.js"></script>
-  <script src="vendors/mail-script.js"></script>
-  <script src="js/main.js"></script>
 </body>
 </html>

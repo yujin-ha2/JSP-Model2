@@ -1,52 +1,37 @@
 package net.funding.db;
 
-import java.sql.Timestamp;
-
 public class AllFundingInfoBean {
-	private int id;
-	private int fundingId;			//펀딩번호
-	private String title;			//프로젝트 제목	
-	private int salesTarget;		//목표 금액
-	private String mainImg;			//대표 이미지
-	private int categoryId;			//리워드 카테고리 번호(뷰티,베이비, 등..)
-	private String storyMainImg;	//프로젝트 소개사진
-	private String storySummary;	//프로젝트 요약
-	private String storyContent;	//프로젝트 스토리
-	private Timestamp startDate;	//프로젝트 시작일
-	private Timestamp endDate;		//프로젝트 종료일
-	private int status;				//프로젝트 상태
-	private String comment;			//반려 이유
-	private String makerId;			//사용자 ID
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
+	private int fundingId;			
+	private String fundingTitle;		
+	private String makerName;
+	private int categoryId;
+	private String categoryName;
+	private String mainImg;
+	private int totalRevenue;
+	private int achievement;
+	private int dayDiff;
+	private String status;
+	private String statusName;
+	private int supporterCount;
+	
 	public int getFundingId() {
 		return fundingId;
 	}
 	public void setFundingId(int fundingId) {
 		this.fundingId = fundingId;
 	}
-	public String getTitle() {
-		return title;
+	public String getFundingTitle() {
+		return fundingTitle;
 	}
-	public void setTitle(String title) {
-		this.title = title;
+	public void setFundingTitle(String fundingTitle) {
+		this.fundingTitle = fundingTitle;
 	}
-	public int getSalesTarget() {
-		return salesTarget;
+	public String getMakerName() {
+		return makerName;
 	}
-	public void setSalesTarget(int salesTarget) {
-		this.salesTarget = salesTarget;
-	}
-	public String getMainImg() {
-		return mainImg;
-	}
-	public void setMainImg(String mainImg) {
-		this.mainImg = mainImg;
+	public void setMakerName(String makerName) {
+		this.makerName = makerName;
 	}
 	public int getCategoryId() {
 		return categoryId;
@@ -54,52 +39,52 @@ public class AllFundingInfoBean {
 	public void setCategoryId(int categoryId) {
 		this.categoryId = categoryId;
 	}
-	public String getStoryMainImg() {
-		return storyMainImg;
+	public String getCategoryName() {
+		return categoryName;
 	}
-	public void setStoryMainImg(String storyMainImg) {
-		this.storyMainImg = storyMainImg;
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
 	}
-	public String getStorySummary() {
-		return storySummary;
+	public String getMainImg() {
+		return mainImg;
 	}
-	public void setStorySummary(String storySummary) {
-		this.storySummary = storySummary;
+	public void setMainImg(String mainImg) {
+		this.mainImg = mainImg;
 	}
-	public String getStoryContent() {
-		return storyContent;
+	public int getTotalRevenue() {
+		return totalRevenue;
 	}
-	public void setStoryContent(String storyContent) {
-		this.storyContent = storyContent;
+	public void setTotalRevenue(int totalRevenue) {
+		this.totalRevenue = totalRevenue;
 	}
-	public Timestamp getStartDate() {
-		return startDate;
+	public int getAchievement() {
+		return achievement;
 	}
-	public void setStartDate(Timestamp startDate) {
-		this.startDate = startDate;
+	public void setAchievement(int achievement) {
+		this.achievement = achievement;
 	}
-	public Timestamp getEndDate() {
-		return endDate;
+	public int getDayDiff() {
+		return dayDiff;
 	}
-	public void setEndDate(Timestamp endDate) {
-		this.endDate = endDate;
+	public void setDayDiff(int dayDiff) {
+		this.dayDiff = dayDiff;
 	}
-	public int getStatus() {
+	public String getStatus() {
 		return status;
 	}
-	public void setStatus(int status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
-	public String getComment() {
-		return comment;
+	public String getStatusName() {
+		return statusName;
 	}
-	public void setComment(String comment) {
-		this.comment = comment;
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
 	}
-	public String getMakerId() {
-		return makerId;
+	public int getSupporterCount() {
+		return supporterCount;
 	}
-	public void setMakerId(String makerId) {
-		this.makerId = makerId;
+	public void setSupporterCount(int supporterCount) {
+		this.supporterCount = supporterCount;
 	}
 }

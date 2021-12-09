@@ -1,5 +1,7 @@
 package net.funding.open.db;
 
+import java.sql.Timestamp;
+
 public class FundingInfoBean {
 
 	private int fundingId;			//펀딩번호
@@ -7,9 +9,13 @@ public class FundingInfoBean {
 	private int salesTarget;		//목표 금액
 	private String mainImg;			//대표 이미지
 	private int categoryId;			//리워드 카테고리 번호(뷰티,베이비, 등..)
+	private String categoryNm;		//리워드 카테고리 이름
 	private String storyMainImg;	//프로젝트 소개사진
 	private String storySummary;	//프로젝트 요약
 	private String storyContent;	//프로젝트 스토리
+	private String deliveryDate;	//배송일
+	private Timestamp startdate;	//프로젝트 시작일
+	private Timestamp enddate;		//프로젝트 종료일
 	
 	public int getFundingId() {
 		return fundingId;
@@ -41,6 +47,12 @@ public class FundingInfoBean {
 	public void setCategoryId(int categoryId) {
 		this.categoryId = categoryId;
 	}
+	public String getCategoryNm() {
+		return categoryNm;
+	}
+	public void setCategoryNm(String categoryNm) {
+		this.categoryNm = categoryNm;
+	}
 	public String getStoryMainImg() {
 		return storyMainImg;
 	}
@@ -58,6 +70,24 @@ public class FundingInfoBean {
 	}
 	public void setStoryContent(String storyContent) {
 		this.storyContent = storyContent;
+	}
+	public String getDeliveryDate() {
+		return deliveryDate;
+	}
+	public void setDeliveryDate(String deliveryDate) {
+		this.deliveryDate = deliveryDate;
+	}
+	public Timestamp getStartdate() {
+		return startdate;
+	}
+	public void setStartdate(Timestamp startdate) {
+		this.startdate = startdate;
+	}
+	public Timestamp getEnddate() {
+		return enddate;
+	}
+	public void setEnddate(Timestamp enddate) {
+		this.enddate = enddate;
 	}
 	
 }

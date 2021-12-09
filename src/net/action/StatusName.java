@@ -20,8 +20,8 @@ public class StatusName {
         //statusMap.put("applyDetail", "승인된 프로젝트의 오픈 신청이 완료되었습니다. 오픈을 위해 리워드를 한번 더 검토해주세요");
         statusMap.put("start", "펀딩 시작");
         statusMap.put("startDetail", "펀딩이 진행되고 있습니다. 판매 현황 메뉴에서 판매 정보를 확인하실 수 있습니다.");
-        statusMap.put("end", "펀딩 마감");
-        statusMap.put("endDetail", "펀딩 종료일입니다. 판매 현황 메뉴에서 펀딩 결과를 확인해보세요.");
+        //statusMap.put("end", "펀딩 마감");
+        //statusMap.put("endDetail", "펀딩 종료일입니다. 판매 현황 메뉴에서 펀딩 결과를 확인해보세요.");
         statusMap.put("success", "펀딩 성공");
         statusMap.put("successDetail", "펀딩이 성공적으로 완료되었습니다. 축하드립니다. 배송까지 문제없이 진행하시고 매출은 결제현황에서 확인해주세요.");
         statusMap.put("fail", "펀딩 실패");

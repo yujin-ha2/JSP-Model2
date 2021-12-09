@@ -37,7 +37,7 @@
 	}
 	os.flush();
 	os.close();
-	sFileInfo += "&bNewLine=true&sFileName="+ name+"&sFileURL="+"/goodFunding_/fundingUpload/"+realname;
+	sFileInfo += "&bNewLine=true&sFileName="+ name+"&sFileURL="+"/GoodFunding/fundingUpload/"+realname;
 	out.println(sFileInfo);
 
 %>

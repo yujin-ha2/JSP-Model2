@@ -11,8 +11,8 @@ public class MemberBean {
 	private int addressNo;
 	private String profile;
 	private int point;
-	private int coupon;
 	private int status;
+	private String authority;
 	
 	public String getId() {
 		return id;
@@ -68,17 +68,17 @@ public class MemberBean {
 	public void setPoint(int point) {
 		this.point = point;
 	}
-	public int getCoupon() {
-		return coupon;
-	}
-	public void setCoupon(int coupon) {
-		this.coupon = coupon;
-	}
 	public int getStatus() {
 		return status;
 	}
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	public String getAuthority() {
+		return authority;
+	}
+	public void setAuthority(String authority) {
+		this.authority = authority;
 	}
 	
 }

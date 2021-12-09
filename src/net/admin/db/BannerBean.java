@@ -4,6 +4,7 @@ public class BannerBean {
 	private int bannerId;
 	private String img;
 	private String link;
+	
 	public int getBannerId() {
 		return bannerId;
 	}

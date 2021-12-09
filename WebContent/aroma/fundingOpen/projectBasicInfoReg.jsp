@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>makerStudio</title>
+    <title>메이커 스튜디오</title>
     <c:set var="contextPath" value="${pageContext.request.contextPath}/aroma"/>
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/ionicons/dist/css/ionicons.css">
@@ -41,30 +41,39 @@
 	function changeStoryImg(a) {
 		$("#storyImgName").text(a.files[0].name);
 	}
+	
+	function inputNumberFormat(obj) {
+	    obj.value = comma(uncomma(obj.value));
+	}
+
+	function comma(str) {
+	    str = String(str);
+	    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+	}
+
+	function uncomma(str) {
+	    str = String(str);
+	    return str.replace(/[^\d]+/g, '');
+	}
 	</script>
 </head>
 <body>
     <div class="container-scroller">
       <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center" style="padding-top: 20px;">
-          <a class="navbar-brand brand-logo" href="#">makerStudio</a>
+          <a class="navbar-brand brand-logo" href="${contextPath}/makerStudioMain.on?fundingId=${fundingId}">makerStudio</a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-center">
-        	<%-- 프로제트 번호: ${projectId} --%>
            <ul class="navbar-nav mr-auto">
             <li class="nav-item">
 	           	<div class="profile-image">
-	              <img class="img-xs rounded-circle" src="${contextPath}/assets/images/face8.jpg" alt="profile image">
-	              <span style="margin-left: 10px; padding-top: auto;">${sessionScope.id}님의 프로젝트 번호는 ${fundingId}</span>
+	              <span style="padding-top: auto;">${sessionScope.id}님의 프로젝트 번호는 ${fundingId}</span>
 	            </div>
             </li>
             </ul>
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw">미리보기</button>
-            </li>
-            <li class="nav-item">
-              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw">나가기</button>
+              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw" onclick="location.href='myprojectList.on'">나가기</button>
             </li>
           </ul>
         </div>
@@ -110,7 +119,7 @@
                             	<p style="font-size: 13px; color: #90949c;">- 최소 50만 원 ~ 최대 1억 원으로 설정하세요.</p>
                             </div>
                             <div>
-								<input type="text" class="form-control" style="display: inline-block; width: 95%" name="salesTarget" id="salesTarget">
+								<input type="text" class="form-control" style="display: inline-block; width: 95%" name="salesTarget" id="salesTarget" onkeyup="inputNumberFormat(this)">
                             	<span style="padding-left: 10px;">원</span>                            
                             </div>
                           </div>
@@ -120,11 +129,11 @@
                         <div class="col-md-7">
                           <div class="form-group">
                             <p class="col-form-label" style="font-size: 16px; font-weight: 400;	">
-                            	프로젝트 일정 선택
+                            	프로젝트 일정	
                             </p>                            
                             <div>
-								<input type="text" class="form-control" style="display: inline-block; width: 95%" name="salesTarget" id="salesTarget">
-                            	<span style="padding-left: 10px;">원</span>                            
+								<input type="date" class="form-control" style="display: inline-block; width: 30%" name="startdate" id="startdate"> -
+								<input type="date" class="form-control" style="display: inline-block; width: 30%" name="enddate" id="enddate">
                             </div>
                           </div>
                         </div>
@@ -138,7 +147,7 @@
                             <div>
                             	<select class="form-control form-control-lg" name="category" id="category">
                             		<option value="선택">선택</option>
-                            		<option value="100">가전제품</option>
+                            		<option value="100">전자제품</option>
                             		<option value="200">패션</option>
                             		<option value="300">영유아</option>
                             		<option value="400">식품</option>

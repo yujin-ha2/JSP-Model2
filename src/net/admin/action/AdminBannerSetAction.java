@@ -19,9 +19,9 @@ public class AdminBannerSetAction implements Action {
 		 ActionForward forward = new ActionForward(); 
 		
 		 adminDAO dao = new adminDAO();
-		 Vector<BannerBean> v = dao.getBannerList(); 
+		 Vector<BannerBean> banners = dao.getBannerList(); 
 		 
-		 request.setAttribute("v", v);
+		 request.setAttribute("banners", banners);
 		 
 		 forward.setRedirect(false);
 		 forward.setPath("admin/adminBanner.jsp");

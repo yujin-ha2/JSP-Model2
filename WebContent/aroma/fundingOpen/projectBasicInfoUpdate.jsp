@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>makerStudio</title>
+    <title>메이커 스튜디오</title>
     <c:set var="contextPath" value="${pageContext.request.contextPath}/aroma"/>
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/ionicons/dist/css/ionicons.css">
@@ -30,7 +31,6 @@
 
 	function changeMainImg(a) {
 		$("#mainImgName").text(a.files[0].name);
-		
 	}
 	
 	function changeStoryImg(a) {
@@ -39,6 +39,19 @@
 		$("#filename").val(name + "story"); */
 	}
     
+	function inputNumberFormat(obj) {
+    	obj.value = comma(uncomma(obj.value));
+	}
+
+	function comma(str) {
+	    str = String(str);
+	    return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+	}
+
+	function uncomma(str) {
+	    str = String(str);
+	    return str.replace(/[^\d]+/g, '');
+	}
     </script>
      <style type="text/css">
 	.input-file-button{
@@ -63,24 +76,19 @@
     <div class="container-scroller">
       <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center" style="padding-top: 20px;">
-          <a class="navbar-brand brand-logo" href="#">makerStudio</a>
+          <a class="navbar-brand brand-logo" href="${contextPath}/makerStudioMain.on?fundingId=${fundingId}">makerStudio</a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-center">
-        	<%-- 프로제트 번호: ${projectId} --%>
            <ul class="navbar-nav mr-auto">
             <li class="nav-item">
 	           	<div class="profile-image">
-	              <img class="img-xs rounded-circle" src="${contextPath}/assets/images/face8.jpg" alt="profile image">
-	              <span style="margin-left: 10px; padding-top: auto;">${sessionScope.id}님의 프로젝트 번호는 ${bean.fundingId}</span>
+	              <span style="padding-top: auto;">${sessionScope.id}님의 프로젝트 번호는 ${fundingId}</span>
 	            </div>
             </li>
             </ul>
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw">미리보기</button>
-            </li>
-            <li class="nav-item">
-              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw">나가기</button>
+              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw" onclick="location.href='myprojectList.on'">나가기</button>
             </li>
           </ul>
         </div>
@@ -103,7 +111,7 @@
                     	프로젝트를 대표할 주요 기본 정보 및 메이커님의 프로젝트를 입력하세요. 스토리에는 메이커님의 진심이 잘 녹여질 수 있도록 명확하고, 솔직하게 작성하세요.
                     </p>
                     </div>
-                    <form class="forms-sample" action="./BasicInfoReg.on" enctype="multipart/form-data" method="post" >
+                    <form class="forms-sample" action="./BasicInfoReg.on" enctype="multipart/form-data" method="post" onsubmit="return checked();">
                     <input type="hidden" name="cmd" value="update">
                     <input type="hidden" name="fundingId" value="${bean.fundingId}">
                       <div class="row" style="margin-bottom: 20px;">
@@ -126,8 +134,24 @@
                             	<p style="font-size: 13px; color: #90949c;">- 최소 50만 원 ~ 최대 1억 원으로 설정하세요.</p>
                             </div>
                             <div>
-								<input type="text" class="form-control" style="display: inline-block; width: 95%" name="salesTarget" id="salesTarget" value="${bean.salesTarget}">
+                            	<fmt:formatNumber var="target" value="${bean.salesTarget}" pattern="#,###"/>
+								<input type="text" class="form-control" style="display: inline-block; width: 95%" name="salesTarget" id="salesTarget" value="${target}" onkeyup="inputNumberFormat(this)">
                             	<span style="padding-left: 10px;">원</span>                            
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 20px;">
+                        <div class="col-md-7">
+                          <div class="form-group">
+                            <p class="col-form-label" style="font-size: 16px; font-weight: 400;	">
+                            	프로젝트 일정	
+                            </p>                            
+                            <div>
+                            	<fmt:formatDate var="start" value="${bean.startdate}" pattern="yyyy-MM-dd"/>
+                            	<fmt:formatDate var="end" value="${bean.enddate}" pattern="yyyy-MM-dd"/>
+								<input type="date" class="form-control" style="display: inline-block; width: 30%" name="startdate" id="startdate" value="${start}"> -
+								<input type="date" class="form-control" style="display: inline-block; width: 30%" name="enddate" id="enddate" value="${end}">
                             </div>
                           </div>
                         </div>
@@ -142,7 +166,7 @@
                             	<select class="form-control form-control-lg" name="category" id="category"  
                             	        onFocus='this.initialSelect = this.selectedIndex;' onChange='this.selectedIndex = this.initialSelect;' >
                             		<option value="선택">선택</option>
-                            		<option value="100">가전제품</option>
+                            		<option value="100">전자제품</option>
                             		<option value="200">패션</option>
                             		<option value="300">영유아</option>
                             		<option value="400">식품</option>
@@ -182,7 +206,7 @@
                             </p>
 							<div>
                             <label class="input-file-button col-md-2" for="storyImg" style="text-align:center; font-size: 17px; line-height: 2.4;">업로드</label>
-							<input type="file" id="storyImg" style="display: none;" onchange="changeStoryImg(this)"/>
+							<input type="file" id="storyImg" style="display: none;" onchange="changeStoryImg(this)" />
 							</div>
 							<input type="hidden" name="storyImg2" id="storyImg2" value="${bean.storyMainImg}">
 							<span style="color: blue; font-size: 14px;" id="storyImgName" >${bean.storyMainImg}</span>
@@ -217,7 +241,7 @@
                              <div>
                             	<p style="font-size: 13px; color: #90949c;">- 진정성있고 매력적인 스토리를 작성해보세요.</p>
                             </div>
-                            <textarea class="form-control" name="story"  id="story" rows="10" cols="100"  style="height:412px; display: none;" >${bean.storyContent}</textarea>
+                            <textarea class="form-control" name="story" id="story" rows="10" cols="100" style="height:412px; display: none;" >${bean.storyContent}</textarea>
                           </div>
                         </div>
                         </div>
@@ -270,6 +294,7 @@
 		var mainImg = document.getElementById("mainImg");
 		var storyImg = document.getElementById("storyImg");
 		var summary = document.getElementById("summary");
+		
 		oEditors.getById["story"].exec("UPDATE_CONTENTS_FIELD", []);   // 에디터의 내용이 textarea에 적용됩니다.
         var sHTML = oEditors.getById["story"].getIR();
 		
@@ -296,13 +321,12 @@
 			category.focus();
 			return false;
 		}
-		
-		if(mainImg.value.length == 0){
+		if(mainImgName.value.length == 0){
 			alert("대표 이미지를 선택하세요!");
 			return false;
 		}
 		
-		if(mainImg.value.length == 0){
+		if(storyImgName.value.length == 0){
 			alert("소개 사진을 선택하세요!");
 			return false;
 		}

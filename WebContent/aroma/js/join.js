@@ -7,7 +7,7 @@ function checkForm(f) {
 		  document.getElementById('id_ck').innerHTML='';
 	  }
 	
-	let regExp_pwd = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[~$@$!%*#?&])[A-Za-z\d~$@$!%*#?&]{8,16}$/;
+	let regExp_pwd = /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/;
 	if(f.pwd.value==""){
     	document.getElementById('pwd_ck').innerHTML='비밀번호는 반드시 입력해야합니다.';
     	f.pwd.focus();
@@ -27,7 +27,7 @@ function checkForm(f) {
 		return false;
 	}
 	
-	if(f.pwd_confirm.value !=f.pwd.value ){
+	if(f.pwd_confirm.value != f.pwd.value ){
 	  	document.getElementById('pwd_confirm_ck').innerHTML='비밀번호는 위와 동일해야 합니다.';
 		f.pwd_confirm.focus();
 		return false;
@@ -87,4 +87,9 @@ $(function(){
 			console.log("fail");
 		});
 	});
+	
 });
+
+
+
+

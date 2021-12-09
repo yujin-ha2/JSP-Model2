@@ -35,9 +35,9 @@
     <c:if test="${projectList ne null}">
     	<c:set var="count" value="${projectList.size()}"/>
     </c:if>
-	<h3>만든 프로젝트</h3><h3>${count}</h3>
+	<h3>만든 프로젝트 &nbsp;${count}</h3>
 	  <div style="padding-bottom: 35px;">
-	  	<button type="button" onclick="location.href='makerStudioMain.on?no=0';" class="btn btn-outline-primary" style="float: right; margin-right: 10px;">프로젝트 오픈신청</button>
+	  	<button type="button" onclick="location.href='makerStudioMain.on?fundingId=0';" class="btn btn-outline-primary" style="float: right; margin-right: 10px;">프로젝트 오픈신청</button>
 	  </div>
 	  <hr>
 	  
@@ -51,46 +51,26 @@
 		<%-- 이전에 생성한 프로젝트가 있는 경우 --%>
 	   	<div class="row">
 			<c:if test="${projectList != null}">
+			
 			<c:forEach var="list" items="${projectList}" varStatus="status">
-			  <c:choose>
-			  	<c:when test="${list.mainImg ne null}">
-			  		<c:set var="mainImg" value="${list.mainImg}"></c:set>
-			  	</c:when>
-			  	<c:otherwise>
-			  		<c:set var="mainImg" value="noImg.PNG"></c:set>
-			  	</c:otherwise>
-			  </c:choose>
-			  
-			  <c:choose>
-			  	<c:when test="${list.title ne null}">
-			  		<c:set var="title" value="${list.title}"></c:set>
-			  	</c:when>
-			  	<c:otherwise>
-			  		<c:set var="title" value="제목을 입력해주세요."></c:set>
-			  	</c:otherwise>
-			  </c:choose>
-			  
-					<div class="col-md-3">
-						<div class="card-deck">
-							<div class="card" style="">
-							    <img class="card-img-top" src="/goodFunding_/fundingUpload/${mainImg}" style="height: 200px;">
-							    <div class="card-body" style="height: 150px;">
-							      <h6 class="card-title" align="left" style="height:35px;">${title}</h6>
-							      <p class="card-text" align="left">${list.makerName}</p>
-							      <p class="card-text" align="left">${list.status}</p>
-							    </div>
-							    <div class="card-footer" style="cursor: pointer;" onclick="location.href='makerStudioMain.on?no='+${list.fundingId};">
-							      <p class="text-muted" style="font-weight: 700; color: #000000D6; font-size: 15px; margin: 0;">스튜디오 바로가기</p>
-							    </div>
-						  	</div>
+				<div class="col-md-3">
+					<div class="card-deck">
+						<div class="card" style="">
+						    <img class="card-img-top" src="${pageContext.request.contextPath}/fundingUpload/${list.mainImg}" style="height: 200px;">
+						    <div class="card-body" style="height: 150px;">
+						      <h6 class="card-title" align="left" style="height:35px;">${list.title}</h6>
+						      <p class="card-text" align="left">${list.makerName}</p>
+						      <p class="card-text" align="left">${list.status}</p>
+						    </div>
+						    <div class="card-footer" style="cursor: pointer;" onclick="location.href='makerStudioMain.on?fundingId='+${list.fundingId};">
+						      <p class="text-muted" style="font-weight: 700; color: #000000D6; font-size: 15px; margin: 0;">스튜디오 바로가기</p>
+						    </div>
 					  	</div>
 				  	</div>
-			  	
-			  </c:forEach>
+			  	</div>
+			</c:forEach>
 			</c:if>
-
-		
-	  </div>
+	    </div>
 	  </div>
 	</div>
   </section>
@@ -98,13 +78,5 @@
 
   <jsp:include page="../bottom.jsp" />
 
-
-  <script src="${contextPath}/vendors/jquery/jquery-3.2.1.min.js"></script>
-  <script src="${contextPath}/vendors/bootstrap/bootstrap.bundle.min.js"></script>
-  <script src="${contextPath}/vendors/skrollr.min.js"></script>
-  <script src="${contextPath}/vendors/nice-select/jquery.nice-select.min.js"></script>
-  <script src="${contextPath}/vendors/jquery.ajaxchimp.min.js"></script>
-  <script src="${contextPath}/vendors/mail-script.js"></script>
-  <script src="${contextPath}/js/main.js"></script>
 </body>
 </html>

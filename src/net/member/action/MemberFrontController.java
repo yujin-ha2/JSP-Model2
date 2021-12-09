@@ -30,26 +30,21 @@ public class MemberFrontController extends HttpServlet{
 	protected void doProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		String RequestURI=request.getRequestURI();
-		
 		String contextPath=request.getContextPath();
-		//System.out.println("contextPath:" + contextPath.length());
-		System.out.println("me_contextPath:" + contextPath);
-		
 		String command=RequestURI.substring(contextPath.length()+6);
-		System.out.println("me_command:" + command);
 		
 		ActionForward forward = null;
 		Action action = null;
 
 		//회원가입 화면으로 이동
-		if(command.equals("/MemberJoin.me")){
+		if(command.equals("/join.me")){
 			forward=new ActionForward();
 			forward.setRedirect(false);
-			forward.setPath("./index.jsp?center=/aroma/member/join.jsp");
+			forward.setPath("/aroma/member/join.jsp");
 		}
 		
 		//회원가입 처리 요청이 들어 왔을떄
-		else if(command.equals("/MemberJoinAction.me")){
+		else if(command.equals("/joinAction.me")){
 			action=new MemberJoinAction();
 			
 			try {
@@ -78,14 +73,14 @@ public class MemberFrontController extends HttpServlet{
 		}
 		
 		//로그인 화면으로 이동
-		else if(command.equals("/MemberLogin.me")){ 	
+		else if(command.equals("/login.me")){ 	
 			forward=new ActionForward();
 			forward.setRedirect(false); 
 			forward.setPath("/aroma/member/login.jsp"); 
 		}
 
 		//로그인 처리 요청이 들어왔을 때
-		else if(command.equals("/MemberLoginAction.me")){
+		else if(command.equals("/loginAction.me")){
 			action=new MemberLoginAction();
 			
 			try {
@@ -96,7 +91,7 @@ public class MemberFrontController extends HttpServlet{
 		}
 
 		//로그아웃 처리 요청이 들어왔을 때
-		else if(command.equals("/MemberLogout.me")){
+		else if(command.equals("/logout.me")){
 			action=new MemberLogoutAction(); 
 
 			try {
@@ -104,22 +99,6 @@ public class MemberFrontController extends HttpServlet{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-		
-		//메인 화면으로 이동
-		else if(command.equals("/Main.me")){
-			/*
-			action= new MainLoadAction();
-			
-			try {
-				forward = action.execute(request, response);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			*/
-			forward=new ActionForward();	
-			forward.setRedirect(true);
-			forward.setPath("index.jsp"); 
 		}
 		
 		//마이페이지 화면으로 이동
@@ -133,9 +112,9 @@ public class MemberFrontController extends HttpServlet{
 			}
 		}
 		
-		//마이페이지 화면으로 이동
+		//프로필 변경 처리
 		else if(command.equals("/memberProfileChange.me")) {
-			action=new memberProfileChangeAction();
+			action=new MemberProfileChangeAction();
 
 			try {
 				forward=action.execute(request, response); 
@@ -146,7 +125,7 @@ public class MemberFrontController extends HttpServlet{
 		
 		//마이페이지(서포터), 나의 메이커 팔로잉 리스트 화면으로 이동
 		else if(command.equals("/myFollowList.me")){
-	       action= new myFollowListAction();
+	       action= new MyFollowListAction();
 	       
 	       try {
 	    	   forward = action.execute(request, response);
@@ -156,8 +135,8 @@ public class MemberFrontController extends HttpServlet{
 	    }
 		
 		//회원 정보 수정 화면으로 이동
-		else if(command.equals("/MyInfoUpdateForm.me")){
-			action = new MyInfoUpdateFormAction();
+		else if(command.equals("/myInfo.me")){
+			action = new MyInfoFormAction();
 			try{
 				forward = action.execute(request, response);
 			}catch (Exception e) {
@@ -166,7 +145,7 @@ public class MemberFrontController extends HttpServlet{
 		}
 		
 		//회원 정보 수정 처리 요청이 들어왔을 때
-		else if(command.equals("/MyInfoUpdate.me")){
+		else if(command.equals("/myInfoUpdate.me")){
 			action = new MyInfoUpdateAction();
 			try {
 				forward = action.execute(request, response);
@@ -176,15 +155,35 @@ public class MemberFrontController extends HttpServlet{
 			}
 		}	
 
-		//아이디 찾기 화면으로 이동
-		else if(command.equals("/FindIdForm.me")) {
+		//회원 정보 수정 - 비밀번호 변경에서 회원 정보 수정 화면으로 이동
+		else if(command.equals("/myInfoFindPwd.me")){
+			action = new MyInfoFindPwdFormAction();
+			try{
+				forward = action.execute(request, response);
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		//회원 탈퇴 요청이 들어왔을 때
+		else if(command.equals("/memberDelete.me")){
+			action= new MemberDeleteAction();
+			try {
+			forward = action.execute(request, response);
+			} catch (Exception e) {
+			e.printStackTrace();
+			}
+		}
+		
+		//아이디/비밀번호 찾기 화면으로 이동
+		else if(command.equals("/findIdPwd.me")) {
 			forward=new ActionForward();
 			forward.setRedirect(false); 
-			forward.setPath("member/findIdForm.jsp");
+			forward.setPath("member/find_id_pwd_form1.jsp");
 		}
 		
 		//아이디 찾기 처리 요청이 들어왔을 때
-		else if(command.equals("/ShowId.me")){
+		else if(command.equals("/showId.me")){
 			action = new ShowIdAction();
 			try {
 				forward = action.execute(request, response);
@@ -193,16 +192,9 @@ public class MemberFrontController extends HttpServlet{
 			}
 		}
 		
-		//비밀번호 찾기 화면으로 이동
-		else if(command.equals("/FindPwdForm.me")) {
-			forward=new ActionForward();
-			forward.setRedirect(false); 
-			forward.setPath("member/findPwdForm.jsp");
-		}
-		
 		//비밀번호 찾기에서 사용자 인증 요청이 들어왔을 때
-		else if(command.equals("/CheckMember.me")){
-			action = new CheckMemberAction();
+		else if(command.equals("/userCheck.me")){
+			action = new UserCheckAction();
 			try{
 				forward = action.execute(request, response);
 			}catch(Exception e){
@@ -220,33 +212,35 @@ public class MemberFrontController extends HttpServlet{
 			}
 		}
 		
-		//회원 탈퇴 화면으로 이동
-		else if(command.equals("/MemberDeleteForm.me")) {
-			forward=new ActionForward();
-			forward.setRedirect(false); 
-			forward.setPath("member/memberDelete.jsp");
-		}
-
-		//회원 탈퇴 요청이 들어왔을 때
-		else if(command.equals("/MemberDelete.me")){
-			action= new MemberDeleteAction();
+		//(마이페이지, 서포터) 나의 펀딩 내역으로 이동  
+		else if(command.equals("/MyFundingHistory.me")){
+			action= new MyFundingHistoryAction();
 			try {
-			forward = action.execute(request, response);
+				forward = action.execute(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		//(마이페이지, 서포터) 나의 펀딩  내역 정보 페이지로 이동
+		else if(command.equals("/MyFundingHistoryInfo.me")){
+			action= new MyFundingHistoryInfoAction();
+			try {
+				forward = action.execute(request, response);
 			} catch (Exception e) {
 			e.printStackTrace();
 			}
 		}
 		
-		//마이페이지 화면 이동
-		else if(command.equals("/MemberDelete.me")){
-			action= new issueCouponAction();
+		//(마이페이지, 서포터) 나의 펀딩 취소하기 
+		else if(command.equals("/MyFundingCancel.me")){
+			action= new MyFundingCancelAction();
 			try {
-			forward = action.execute(request, response);
+				forward = action.execute(request, response);
 			} catch (Exception e) {
 			e.printStackTrace();
 			}
 		}
-		
 		
 		//주소 이동
 		if(forward!=null){ 

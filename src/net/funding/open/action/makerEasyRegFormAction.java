@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.action.Action;
 import net.action.ActionForward;
-import net.funding.open.db.fundingOpenDAO;
+import net.funding.open.db.FundingOpenDAO;
 import net.member.db.MemberBean;
 import net.member.db.MemberDAO;
 
@@ -31,7 +31,7 @@ public class makerEasyRegFormAction implements Action {
 		
 		}
 		
-		boolean result = new fundingOpenDAO().confirmUserStatus(id);
+		boolean result = new FundingOpenDAO().confirmUserStatus(id);
 		if(result == true) {
 			PrintWriter out=response.getWriter();
 			out.println("<script>");

@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>makerStudio</title>
+    <title>메이커 스튜디오</title>
 	<c:set var="contextPath" value="${pageContext.request.contextPath}/aroma"/>
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/ionicons/dist/css/ionicons.css">
@@ -46,92 +46,99 @@
 	}
     </style>
     <script type="text/javascript">
-		function popup(){
-			var url = "${contextPath}/fundingOpen/rewardPopup.jsp";
-			var name = "rewardpopup";
-			var option = "width = 700, height = 850, top = 20,  location = no, scrolbar=no, toolbar=no, resizable=no, status = no, left=30, right=30 "
-			window.open(url, name, option);
+    	var index = 1;
+    	function inputNumberFormat(obj) {
+    	     obj.value = comma(uncomma(obj.value));
+    	 }
+
+    	 function comma(str) {
+    	     str = String(str);
+    	     return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    	 }
+
+    	 function uncomma(str) {
+    	     str = String(str);
+    	     return str.replace(/[^\d]+/g, '');
+    	 }
+    	 
+		function addRow(obj) {
+			++index;
+			/* var tr = btnId.parent().parent().attr('id'); */
+			var tr = $(obj).parent().parent();
+			/* alert($(tr).attr('id')); */
+			
+			var html = '';
+			html += '<tr id="dynamicTr'+index+'">';
+       		html += '<td style="word-break:break-all; padding: 12px 6px;" width="30%"><input type="text" class="form-control" id="option" name="option" title="옵션명"></td>';
+       		html += '<td style="word-break:break-all; padding: 12px 6px;" width="30%"><input type="text" class="form-control" id="optionDetail" name="optionDetail" title="옵션구성"></td>';
+       		html += '<td style="word-break:break-all; padding: 12px 6px;" width="15%"><input type="text" class="form-control" id="price" name="price" title="가격" onkeyup="inputNumberFormat(this)"></td>';
+       		html += '<td style="word-break:break-all; padding: 12px 6px;" width="10%"><input type="text" class="form-control" id="quantity" name="quantity" title="제한수량" onkeyup="inputNumberFormat(this)"></td>';
+       		html += '<td style="word-break:break-all; padding: 12px 6px;" width="15%"><input type="text" class="form-control" id="deliveryDate" name="deliveryDate" title="배송날짜"></td>';
+       		html += '<td style="word-break:break-all; padding: 12px 6px;" width="10%"><input type="text" class="form-control" id="deliveryFee" name="deliveryFee" title="배송비" onkeyup="inputNumberFormat(this)"></td>';
+       		html += '<td style="word-break:break-all; padding: 12px 6px;" width="5%">';
+       		html += '<input type="button" class="form-control" id="appendBtn" name="appendBtn" value="+" style="width: 50%;" onclick="addRow(this);">';
+       		html += '<input type="button" class="form-control" id="removeBtn" name="removeBtn" value="-" style="width: 50%; margin-left: 3px;" onclick="deleteRow(this);">';
+       		html += '</td>';
+       		html += '</tr>';
+       		
+			$(tr).after(html);
+
 		}
 		
-		var myModalEl = document.getElementById('#LoginModal')
-		myModalEl.addEventListener('shown.bs.modal', function (event) {
-			$('.modal-backdrop').css('background', '#00000065');
-		})
+		function deleteRow(obj) {
+			var cnt = $('#dynamicTbody tr').length;
+			
+			if(cnt>1){
+				$(obj).parent().parent().remove();
+			}else{
+				alert("리워드는 1개 이상 작성하셔야 합니다.");
+			}
+		}
 		
-		/* $("#LoginModal").on('shown.bs.modal', function() {
-			  console.log('dfdfdf');
-			  $('.modal-backdrop').css('background', '#00000065');
-			}); */
-
+		function inputCheck() {
+			var isRight = true;
+	   		$("#rewardForm").find("input[type=text]").each(function(index, item){
+	               // 아무값없이 띄어쓰기만 있을 때도 빈 값으로 체크되도록 trim() 함수 호출
+	               if($(this).val().trim() == '') {
+	                   $(this).focus();
+	                   isRight = false;
+	               }
+		    });
+	   		
+            if (isRight) {
+            	$("#rewardForm").submit();
+            }else{
+            	alert("모든 항목을 입력해주세요.");
+            }	
+		}
     </script>
 </head>
 <body>
 
-<!-- Modal -->
-<div class="modal fade" id="LoginModal" name="LoginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content" style="width: 400px; height:220px; margin-top: 20px;">
-      <div class="modal-header" style="border-bottom:0px;">
-        <h5 class="modal-title" id="exampleModalCenterTitle" style="font-weight: 700; font-size: 23px;">로그인이 필요합니다.</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="padding-right: 25px; font-size: 2rem;">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" style="font-size: 17px; letter-spacing: -.02em;">
-           계속 진행하려면 회원가입 또는 로그인하여야 합니다. 작성중인 내용은 그대로 저장됩니다.
-      </div>
-      <div class="modal-footer" style="border-top: 0px; padding: 0 15px 20px 15px; flex-wrap: unset; text-align: center;" >
-        <button type="button" class="btn btn-secondary" style="width: 100%; height: 40px; border: 1px solid rgba(0,0,0,.15);" data-dismiss="modal">회원가입</button>
-        <button type="button" class="btn btn-primary" style="width: 100%; margin-left: 10px; background-color: #00c4c4; border-color:#00c4c4; height: 40px;" >로그인</button>
-      </div>
-    </div>
-  </div>
-</div>
-
    <div class="container-scroller">
       <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center" style="padding-top: 20px;">
-          <a class="navbar-brand brand-logo" href="#">makerStudio</a>
+          <a class="navbar-brand brand-logo" href="${contextPath}/makerStudioMain.on?fundingId=${fundingId}">makerStudio</a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-center">
+           <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+	           	<div class="profile-image">
+	              <span style="padding-top: auto;">${sessionScope.id}님의 프로젝트 번호는 ${fundingId}</span>
+	            </div>
+            </li>
+            </ul>
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item dropdown">
-              <a class="nav-link count-indicator" id="messageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
-                <i class="mdi mdi-bell-outline"></i>
-                <span class="count">7</span>
-              </a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-toggle="dropdown">
-                <i class="mdi mdi-email-outline"></i>
-                <span class="count bg-success">3</span>
-              </a>
-            </li>
-            <li class="nav-item dropdown d-none d-xl-inline-block user-dropdown">
-              <a class="nav-link dropdown-toggle" id="UserDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
-                <img class="img-xs rounded-circle" src="../assets/images/face8.jpg" alt="Profile image"> </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
-                <div class="dropdown-header text-center">
-                  <img class="img-md rounded-circle" src="../assets/images/face8.jpg" alt="Profile image">
-                  <p class="mb-1 mt-3 font-weight-semibold">Allen Moreno</p>
-                  <p class="font-weight-light text-muted mb-0">allenmoreno@gmail.com</p>
-                </div>
-                <a class="dropdown-item">My Profile <span class="badge badge-pill badge-danger">1</span><i class="dropdown-item-icon ti-dashboard"></i></a>
-                <a class="dropdown-item">Messages<i class="dropdown-item-icon ti-comment-alt"></i></a>
-                <a class="dropdown-item">Activity<i class="dropdown-item-icon ti-location-arrow"></i></a>
-                <a class="dropdown-item">FAQ<i class="dropdown-item-icon ti-help-alt"></i></a>
-                <a class="dropdown-item">Sign Out<i class="dropdown-item-icon ti-power-off"></i></a>
-              </div>
+            <li class="nav-item">
+              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw" onclick="location.href='myprojectList.on'">나가기</button>
             </li>
           </ul>
-          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-            <span class="mdi mdi-menu"></span>
-          </button>
         </div>
       </nav>
-      <!-- partial -->
       <div class="container-fluid page-body-wrapper">
-        <jsp:include page="nav.jsp"></jsp:include>
+        <jsp:include page="nav.jsp">
+        <jsp:param name="fundingId" value="${fundingId}"/> 
+       	</jsp:include>
         
         <!-- partial -->
         <div class="main-panel">
@@ -146,7 +153,9 @@
                     	서포터에게 제공할 리워드 내용을 입력하세요. 서포터가 쉽게 펀딩할 수 있는 저렴한 리워드부터 서포터의 보다 빠른 펀딩을 유도할 수 있는 얼리버드 리워드까지 다양한 리워드를 구성하세요.
                     </p>
                     </div>
-                    <form class="forms-sample">
+                    <form class="forms-sample" id="rewardForm" action="${contextPath}/rewardReg.on" method="post">
+                    <input type="hidden" name="fundingId" id="fundingId" value="${fundingId}">
+                    <input type="hidden" name="cmd" id="cmd" value="register">
                       <div class="row" style="margin-bottom: 20px;">
                         <div class="col-md-7">
                           <div class="form-group">
@@ -158,6 +167,14 @@
 							 			<td>혜택이 높은 순으로 나오도록 정렬 순서를 등록하세요.</td>
 							 		</tr>
 							 		<tr>
+							 			<td class="condition">옵션 구성</td>
+							 			<td>제품 구성 및 옵션(사이즈,색상 등)에 대해 상세하게 등록하세요.</td>
+							 		</tr>
+							 		<tr>
+							 			<td class="condition">판매 가격</td>
+							 			<td>해당 옵션의 펀딩 가격을 정확히 기입해주세요.</td>
+							 		</tr>
+							 		<tr>
 							 			<td class="condition">제한 수량</td>
 							 			<td>생상 및 제공할 수 있는 리워드의 총 수량으로 해당 수령이 모두 펀딩되면 더이상 펀딩 불가합니다.</td>
 							 		</tr>
@@ -165,27 +182,42 @@
 							 			<td class="condition">발송 시작일</td>
 							 			<td> 설정한 발송 시작일까지 리워드가 발송되지 않을 경우, 서포터가 펀딩금 반환을 신청할 수 있으니 신중하게 선택하세요.</td>
 							 		</tr>
-							 		<tr>
-							 			<td class="condition">옵션 조건</td>
-							 			<td>옵션(사이즈,색상 등)이 필요한 경우, 옵션을 추가하세요.</td>
-							 		</tr>
 							 	</table>
                             </div>
-                            <div>
-                            	<input type="button" class="input-file-button col-md-2" style="font-size: 17px;" onclick="" value="추가하기"  data-toggle="modal" data-target="#LoginModal" >
-							</div>
-                            <div style="padding-top: 10px;">
-                            	<p style="font-size: 13px; color: #90949c;">
-                            		3MB 이하의 JPEG, PNG 파일<br>
-									해상도 1200x675 픽셀 이상<br>
-									텍스트 및 로고 삽입 금지<br>
-								</p>
-                            </div>
+                            <div style="margin: 30px 0;" id="Categories">
+	                          <table class="table table-hover">
+			               		<thead>
+				               		<tr>
+										<th style="width: 30%">옵션 구성</th>
+										<th style="width: 30%">옵션 상세 설명</th>
+					               		<th style="width: 15%">제품 가격</th>
+					               		<th style="width: 10%">제한 수량</th>
+					               		<th style="width: 15%">발송 시작일</th>
+					               		<th style="widht: 10%">배송비</th>
+					               		<th style="width: 5%"></th>
+				               		</tr>
+			               		</thead>
+			               		<tbody id="dynamicTbody">
+									<tr id="dynamicTr1">
+										<td style="word-break:break-all; padding: 12px 6px;" width="30%"><input type="text" class="form-control" id="option" name="option"></td>
+										<td style="word-break:break-all; padding: 12px 6px;" width="30%"><input type="text" class="form-control" id="optionDetail" name="optionDetail"></td>
+										<td style="word-break:break-all; padding: 12px 6px;" width="15%"><input type="text" class="form-control" id="price" name="price" onkeyup="inputNumberFormat(this)"></td>
+										<td style="word-break:break-all; padding: 12px 6px;" width="10%"><input type="text" class="form-control" id="quantity" name="quantity" onkeyup="inputNumberFormat(this)"></td>
+										<td style="word-break:break-all; padding: 12px 6px;" width="15%"><input type="text" class="form-control" id="deliveryDate" name="deliveryDate"></td>
+										<td style="word-break:break-all; padding: 12px 6px;" width="10%"><input type="text" class="form-control" id="deliveryFee" name="deliveryFee" onkeyup="inputNumberFormat(this)"></td>
+										<td style="word-break:break-all" width="5%">
+											<input type="button" class="form-control" id="appendBtn" name="appendBtn" value="+" style="width: 50%;" onclick="addRow(this);">
+											<input type="button" class="form-control" id="removeBtn" name="removeBtn" value="-" style="width: 50%;" onclick="deleteRow(this);">
+										</td>
+									</tr>
+			                   	</tbody>
+	                          </table>
+                          	</div>
                           </div>
                         </div>
                         </div>
 	                    <div class="col-md-3" style="padding-left: 0;">
-	                    	<button class="saveBtn">저장하기</button>
+	                    	<input type="button" class="saveBtn" value="저장하기" onclick="inputCheck()">
 	                    </div>
                     </form>
                   </div>

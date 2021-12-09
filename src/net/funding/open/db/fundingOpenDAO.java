@@ -4,31 +4,37 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-public class fundingOpenDAO {
+import jdk.management.resource.internal.TotalResourceContext;
+import net.action.CategoryName;
+import net.funding.db.PaymentBean;
+
+public class FundingOpenDAO {
 	
+	DataSource ds;
 	Connection con;
 	PreparedStatement pstmt;
 	ResultSet rs;
 	
-	public fundingOpenDAO() {
+	public FundingOpenDAO() {
 		try {
 			Context init = new InitialContext();
-			DataSource ds = (DataSource)init.lookup("java:comp/env/jdbc/funding");
-			con = ds.getConnection();	
+			ds = (DataSource)init.lookup("java:comp/env/jdbc/funding");
 		}catch(Exception e) {
 			System.out.println("DB연결 실패: " +e);
 			return;
 		}
 	}
 	
-	public void ResouceClose(){	
+	public void ResourceClose(){	
 		try {
 			if(pstmt != null){
 				pstmt.close();
@@ -48,9 +54,9 @@ public class fundingOpenDAO {
 	//메이커 간편 등록으로 메이커 등록 처리
 	public boolean insertEasyMaker(MakerBean maker) {
 		
-		
 		try {
 			String sql="insert into maker(userId, name, type) values(?,?,?)";
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, maker.getUserId());
 			pstmt.setString(2, maker.getName());
@@ -58,18 +64,17 @@ public class fundingOpenDAO {
 			int result = pstmt.executeUpdate();
 			
 			if(result == 1 ) {
-				sql = "update member set makerNo = (select makerNo from maker where id = ?) where id = ?";
+				sql = "update member set makerNo = (select makerNo from maker where userId = '"+maker.getUserId()+"') where id = ?";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setString(1, maker.getUserId());
-				pstmt.setString(2, maker.getUserId());
 				pstmt.executeUpdate();
 				return true;
 			}
 			
 		}catch(Exception e) {
-			System.out.println("insertEasyMaker Error" + e.toString());
+			System.out.println("insertEasyMaker Error " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		return false;
 	}
@@ -79,10 +84,11 @@ public class fundingOpenDAO {
 		boolean result = false;
 		String sql="select makerNo from member where id = ?";
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, id);
-
 			rs = pstmt.executeQuery();
+
 			if(rs.next()) {
 				if(rs.getInt("makerNo") > 0) {
 					result= true;
@@ -91,7 +97,7 @@ public class fundingOpenDAO {
 		}catch(Exception e) {
 			System.out.println("confirmUserStatus error :" + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		return result;
 	}
@@ -99,10 +105,10 @@ public class fundingOpenDAO {
 	//새로운 프로젝트 시작 - 하유진
 	public int insertNewProject(String id) {
 		
-		String sql="insert into allproject(userId, makerNo) SELECT id, makerNo from member where id = ?";
+		String sql="insert into allproject(userId, makerNo) (SELECT userId, makerNo from maker where userId = '"+id+"')";   //고민해야 함
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, id);
 			int result = pstmt.executeUpdate();
 			
 			if(result == 1) {
@@ -116,7 +122,7 @@ public class fundingOpenDAO {
 		}catch(Exception e) {
 			System.out.println("insertNewProject error : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		return 0;
 	}
@@ -127,10 +133,22 @@ public class fundingOpenDAO {
 		List<myProjectBean> list = new ArrayList<myProjectBean>();
 		myProjectBean bean = null;
 		String sql= "select a.fundingId, a.status, m.name, f.mainImg, f.title " + 
-					"from allproject a join maker m on a.makerNo = m.makerNo " + 
-					"join fundinginfo f on a.fundingId = f.fundingId " +
-					"where a.userId = ?";
+					"from allproject a " + 
+					"join maker m " + 
+					"on a.userId = m.userId " + 
+					"join fundinginfo f " + 
+					"on a.fundingId = f.fundingId " + 
+					"where a.userId = ? " + 
+					"union all " + 
+					"select  a.fundingId, a.status, m.name, 'noImg.PNG', '제목을 입력해주세요.' " + 
+					"from allproject a " + 
+					"join maker m " + 
+					"on a.userId = m.userId " + 
+					"where not exists ( select fundingId " +
+										"from fundinginfo " +
+										"where fundingId = a.fundingId )";	
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, id);
 			rs = pstmt.executeQuery();
@@ -141,12 +159,13 @@ public class fundingOpenDAO {
 				bean.setMakerName(rs.getString("name"));
 				bean.setMainImg(rs.getString("mainImg"));
 				bean.setTitle(rs.getString("title"));
+				System.out.println("fundingId:" + bean.getFundingId());
 				list.add(bean);
 			}
 		}catch(Exception e) {
 			System.out.println("getProjectList error : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		return list;
 	}
@@ -156,6 +175,7 @@ public class fundingOpenDAO {
 		List<String> statusList = new ArrayList<String>();
 		String sql="select requirement, fundinginfo, reward, rewarddetail, maker, status from allproject where fundingId = ?";
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, fundingId);
 			rs = pstmt.executeQuery();
@@ -172,7 +192,7 @@ public class fundingOpenDAO {
 		}catch(Exception e) {
 			System.out.println("getProjectStatus error : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		return statusList;
 	}
@@ -180,9 +200,14 @@ public class fundingOpenDAO {
 	//메이커 스튜디오, 상태 받아오기 - 하유진
 	public AllProject getStatus(int fundingId, String field) {
 		AllProject project = null;
-		String sql = "select status, " + field + " from allproject where fundingId = ?";
+		System.out.println("field Length: " + field.length());
+		String fieldName = "";
+		if(field.length() > 1)
+			fieldName = ", " + field;
+		String sql = "select status" + fieldName + " from allproject where fundingId = ?";
 		System.out.println("sql: " + sql);
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, fundingId);
 			rs = pstmt.executeQuery();
@@ -190,23 +215,48 @@ public class fundingOpenDAO {
 			if(rs.next()) {
 				project = new AllProject();
 				project.setStatus(rs.getString(1));
-				project.setIsReg(rs.getInt(2));
+				if(field.length() > 1)
+					project.setIsReg(rs.getInt(2));
 			}
 		}catch(Exception e) {
 			System.out.println("getStatus error : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		
 		return project;
 	}
 
+	//펀딩 관리자 승인 요청(=제출시)
+	public int RequestForApproval(int fundingId) {
+		int result = 0;
+		String sql = "update allproject set status = 'submission', submitDate = ? where fundingId = ?"; 
+		
+		try {
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			Timestamp date = new Timestamp(System.currentTimeMillis());
+			System.out.println("date: " + date); 
+			pstmt.setTimestamp(1, date); 
+			pstmt.setInt(2, fundingId);
+			
+			result = pstmt.executeUpdate();
+			
+		}catch(Exception e) {
+			System.out.println("RequestForApproval : " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return result;
+	}
+	
 	//기본 요건 등록 - 하유진
 	public int insertRequirement(RequirementsBean bean) {
 		int result = 0;
 		String sql = "insert into requirement(q1, differ, reward, delivery, q4, fundingId) values (?, ?, ?, ?, ?, ?)";
 		
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, bean.getQ1());
 			pstmt.setString(2, bean.getDiffer());
@@ -227,7 +277,7 @@ public class fundingOpenDAO {
 		}catch(Exception e) {
 			System.out.println("insertRequirement : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		return result;
 	}
@@ -238,6 +288,7 @@ public class fundingOpenDAO {
 		
 		String sql = "select q1, differ, reward, delivery, q4, fundingId from requirement where fundingId = ?";
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, fundingId);
 			rs = pstmt.executeQuery();
@@ -254,7 +305,7 @@ public class fundingOpenDAO {
 		}catch(Exception e) {
 			System.out.println("getRequirement error : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		return bean;
 	}
@@ -265,6 +316,7 @@ public class fundingOpenDAO {
 		String sql = "update requirement set q1=?, differ=?, reward=?, delivery=?, q4=? where fundingId = ?";
 		
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, bean.getQ1());
 			pstmt.setString(2, bean.getDiffer());
@@ -278,17 +330,23 @@ public class fundingOpenDAO {
 		}catch(Exception e) {
 			System.out.println("updateRequirment : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		return result;
 	}
 	
 	//기본 정보 등록
 	public int insertBasicInfo(FundingInfoBean bean) {
+//		System.out.println("등록시작");
+//		System.out.println("mainImg: " + bean.getMainImg());
+//		System.out.println("categoryId: " + bean.getCategoryId());
+//		System.out.println("storyMainImg: " + bean.getStoryMainImg());
+		
 		int result = 0;
-		String sql = "insert into fundingInfo(fundingId, title, salesTarget, mainImg, categoryId, storyMainImg, storySummary, storyContent) "
-				   + "values(?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "insert into fundingInfo(fundingId, title, salesTarget, mainImg, categoryId, storyMainImg, storySummary, storyContent, startdate, enddate) "
+				   + "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, bean.getFundingId());
 			pstmt.setString(2, bean.getTitle());
@@ -298,6 +356,8 @@ public class fundingOpenDAO {
 			pstmt.setString(6, bean.getStoryMainImg());
 			pstmt.setString(7, bean.getStorySummary());
 			pstmt.setString(8, bean.getStoryContent());
+			pstmt.setTimestamp(9, bean.getStartdate());
+			pstmt.setTimestamp(10, bean.getEnddate());
 			
 			result = pstmt.executeUpdate();
 			
@@ -310,7 +370,7 @@ public class fundingOpenDAO {
 		}catch(Exception e) {
 			System.out.println("insertBasicInfo: " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		return result;
 	}
@@ -319,8 +379,10 @@ public class fundingOpenDAO {
 	public FundingInfoBean getFundingInfo(int fundingId) {
 		FundingInfoBean bean = null;
 		
-		String sql = "select title, salesTarget, mainImg, categoryId, storyMainImg, storySummary, storyContent, fundingId from fundinginfo where fundingId = ?";
+		String sql = "select title, salesTarget, mainImg, categoryId, storyMainImg, storySummary, storyContent, " +
+					 "startdate, enddate, fundingId from fundinginfo where fundingId = ?";
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, fundingId);
 			rs = pstmt.executeQuery();
@@ -334,12 +396,14 @@ public class fundingOpenDAO {
 				bean.setStoryMainImg(rs.getString("storyMainImg"));
 				bean.setStorySummary(rs.getString("storySummary"));
 				bean.setStoryContent(rs.getString("storyContent"));
+				bean.setStartdate(rs.getTimestamp("startdate")); //
+				bean.setEnddate(rs.getTimestamp("enddate")); 	 //
 				bean.setFundingId(rs.getInt("fundingId"));
 			}
 		}catch(Exception e) {
 			System.out.println("getFundingInfo error : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		return bean;
 	}
@@ -347,10 +411,11 @@ public class fundingOpenDAO {
 	//기본 정보 수정하기 - 하유진
 	public int updateBasicInfo(FundingInfoBean bean) {
 		int result = 0;
-		String sql = "update fundinginfo set title=?, salesTarget=?, mainImg=?, categoryId=?, storyMainImg=?, storySummary=?, storyContent=? " 
+		String sql = "update fundinginfo set title=?, salesTarget=?, mainImg=?, categoryId=?, storyMainImg=?, storySummary=?, storyContent=?, startdate=?, enddate=? " 
 				   + "where fundingId = ?";
 		
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, bean.getTitle());
 			pstmt.setInt(2, bean.getSalesTarget());
@@ -359,26 +424,305 @@ public class fundingOpenDAO {
 			pstmt.setString(5, bean.getStoryMainImg());
 			pstmt.setString(6, bean.getStorySummary());
 			pstmt.setString(7, bean.getStoryContent());
-			pstmt.setInt(8, bean.getFundingId());
+			pstmt.setTimestamp(8, bean.getStartdate()); 
+			pstmt.setTimestamp(9, bean.getEnddate());	
+			pstmt.setInt(10, bean.getFundingId());
 			
 			result = pstmt.executeUpdate();
 			
 		}catch(Exception e) {
 			System.out.println("updateBasicInfo : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
+		}
+		return result;
+	}
+	
+	//리워드  삭제 - 하유진
+	public int deleteReward(int fundingId) {
+	
+		int result = 0;
+		String sql = "delete from reward where fundingId=?";
+		
+		try {
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			result = pstmt.executeUpdate();
+		}catch(Exception e) {
+			System.out.println("deleteReward: " + e.toString());
+		}finally {
+			ResourceClose();
 		}
 		return result;
 	}
 
+	//리워드 등록 - 하유진
+	public int insertReward(int fundingId, List<RewardBean> list, String mode) {
+		int result = 0;
+		String sql = "insert into reward(fundingId, price, rewardOption, rewardDetail, deliveryFee, salesQuantity, remainingQuantity, deliveryDate) values(?, ?, ?, ?, ?, ?, ?, ?)";
+		
+		try {
+			
+			if(mode.equals("update")) 
+				deleteReward(fundingId);
+				
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			
+			for(RewardBean bean : list) {
+				pstmt.setInt(1, fundingId);
+				pstmt.setInt(2, bean.getPrice());
+				pstmt.setString(3, bean.getRewardOption());
+				pstmt.setString(4, bean.getRewardDetail());
+				pstmt.setInt(5, bean.getDeliveryFee());
+				pstmt.setInt(6, bean.getSalesQuantity());
+				pstmt.setInt(7, bean.getSalesQuantity());
+				pstmt.setString(8, bean.getDeliveryDate());
+				result = pstmt.executeUpdate();
+			}
+			
+			if(result == 1) {
+				sql = "update allproject set reward = 1 where fundingId = ?";
+				pstmt = con.prepareStatement(sql);
+				pstmt.setInt(1, fundingId);
+				pstmt.executeUpdate();
+			}
+		
+		}catch(Exception e) {
+			result = 0;
+			System.out.println("insertReward: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return result;
+	}
+	
+	//리워드 리스트 받아오기 (ajax) - 하유진
+	public List<RewardBean> getRewards(int fundingId) {
+		List<RewardBean> list = new ArrayList<RewardBean>();
+		RewardBean bean = null;
+		
+		String sql= "select fundingId, price, rewardOption, rewardDetail, deliveryFee, salesQuantity, deliveryDate from reward where fundingId = ?";
+		try {
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				bean = new RewardBean();
+				bean.setFundingId(rs.getInt("fundingId"));
+				bean.setPrice(rs.getInt("price"));
+				bean.setRewardOption(rs.getString("rewardOption"));
+				bean.setRewardDetail(rs.getString("rewardDetail"));
+				bean.setDeliveryFee(rs.getInt("deliveryFee"));
+				bean.setSalesQuantity(rs.getInt("salesQuantity"));
+				bean.setDeliveryDate(rs.getString("deliveryDate"));
+				list.add(bean);
+			}
+		}catch(Exception e) {
+			System.out.println("getRewards error : " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+	
+		return list;
+	}
+	
+	//리워드 상세정보 삭제 - 하유진
+	public int deleteRewardDetail(int fundingId) {
+	
+		int result = 0;
+		String sql = "delete from rewarddetail_list where fundingId=?";
+		
+		try {
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			result = pstmt.executeUpdate();
+		}catch(Exception e) {
+			System.out.println("deleteRewardDetail: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return result;
+	}
+
+	//리워드 상세정보 등록하기 - 하유진
+	public int insertRewardDetail(int fundingId, List<rewardInfoBean> list, String mode) {
+		
+		int result = 0;
+		String sql = "insert into rewarddetail_list(fundingId, categoryId, DetailId, DetailContent) values(?, ?, ?, ?)";
+		
+		try {
+			System.out.println("insertRewardDetail"); 
+			result = (mode.equals("update")) ? deleteRewardDetail(fundingId) : 0;  
+				
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			
+			for(rewardInfoBean bean : list) {
+				pstmt.setInt(1, fundingId);
+				pstmt.setInt(2, bean.getCategoryId());
+				pstmt.setInt(3, bean.getDetailId());
+				pstmt.setString(4, bean.getDetailContent());
+				result = pstmt.executeUpdate();
+			}
+			
+		}catch(Exception e) {
+			result = 0;
+			System.out.println("insertRewardDetail: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return result;
+	}
+	
+	//리워드 정책 등록하기 - 하유진
+	public int insertRewardPolicy(int fundingId, String policy) {
+
+		int result = 0;
+		String sql = "insert into rewardpolicy(fundingId, policy) values(?, ?)";
+		try {
+			System.out.println("insertRewardPolicy");
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			pstmt.setString(2, policy);
+			result = pstmt.executeUpdate();
+			
+			if(result == 1) {
+				sql = "update allproject set rewarddetail = 1 where fundingId = ?";
+				pstmt = con.prepareStatement(sql);
+				pstmt.setInt(1, fundingId);
+				pstmt.executeUpdate();
+			}
+			
+		}catch (Exception e) {
+			System.out.println("insertRewardPolicy: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return result;
+	}
+	
+	//리워드 정책 수정하기 - 하유진
+	public int updateRewardPolicy(int fundingId, String policy) {
+
+		int result = 0;
+		String sql = "update rewardpolicy set policy=?, updateDate=? where fundingId=?";
+		try {
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			Timestamp time = new Timestamp(System.currentTimeMillis());
+
+			pstmt.setString(1, policy);
+			pstmt.setTimestamp(2, time);
+			pstmt.setInt(3, fundingId);
+			result = pstmt.executeUpdate();
+			
+		}catch (Exception e) {
+			System.out.println("updateRewardPolicy: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return result;
+	}
+	
+	//리워드  카테고리 정보 가져오기 - 하유진
+	public Vector<rewardInfoBean> getCategoryDetails(int categoryId) {
+		Vector<rewardInfoBean> vector = new Vector<rewardInfoBean>();
+		rewardInfoBean bean = null;
+		
+		String sql = "select * from rewarddetail where categoryId = ?";
+		try {
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, categoryId);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				bean = new rewardInfoBean();
+				bean.setCategoryId(rs.getInt("categoryId"));
+				bean.setDetailId(rs.getInt("DetailId"));
+				bean.setDetailName(rs.getString("DetailName"));
+				bean.setExample(rs.getString("Example"));
+				vector.add(bean);
+			}
+		}catch(Exception e) {
+			System.out.println("getCategoryDetails error : " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		
+		return vector;
+	}
+	
+	//등록된 리워드 상세정보 모두 가져오기 - 하유진
+	public List<rewardInfoBean> getRewardsInfoList(int fundingId){
+		List<rewardInfoBean> list = new ArrayList<rewardInfoBean>();
+		rewardInfoBean bean = null;
+		
+		String sql = "select list.fundingId, detail.categoryId, detail.DetailId, detail.DetailName, detail.Example, list.DetailContent "
+				   + "from rewarddetail detail join rewarddetail_list list " 
+				   + "on detail.DetailId = list.DetailId and list.fundingId=? "
+				   + "order by categoryId desc";
+		
+		try {
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				bean = new rewardInfoBean();
+				bean.setCategoryId(rs.getInt("categoryId"));
+				bean.setDetailId(rs.getInt("DetailId"));
+				bean.setDetailName(rs.getString("DetailName"));
+				bean.setExample(rs.getString("Example"));
+				bean.setDetailContent(rs.getString("DetailContent"));
+				list.add(bean);	
+			}
+		}catch(Exception e) {
+			System.out.println("getRewardsInfoList error : " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		
+		return list;
+	}
+	
+	//리워드 정책 가져오기 - 하유진
+	public String getRewardPolicy(int fundingId) {
+		String policy = "";
+		String sql = "select policy from rewardpolicy where fundingId = ?";
+		try {
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				policy = rs.getString("policy");
+			}
+		}catch(Exception e) {
+			System.out.println("getRewardPolicy error : " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		
+		return policy;
+	}
+	
 	//메이커 기본정보 가져오기 - 하유진
-	public MakerBean getMakerInfo(String userId) {
+	public MakerBean getMakerInfo(int fundingId) {
 		MakerBean bean = null;
 		
-		String sql = "select name, type from maker where userId = ?";
+		String sql = "select name, type, userId from maker where userId = (select userId from allproject where fundingId = ?)";
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, userId);
+			pstmt.setInt(1, fundingId);
 			rs = pstmt.executeQuery();
 			
 			if(rs.next()) {
@@ -389,21 +733,22 @@ public class fundingOpenDAO {
 		}catch(Exception e) {
 			System.out.println("getMakerInfo error : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		
 		return bean;
 	}
 	
 	//메이커 상세 정부 가져오기 - 하유진
-	public MakerBean getMakerDetail(String userId) {
+	public MakerBean getMakerDetail(int fundingId) {
 		MakerBean bean = null;
 		
 		String sql = "select name, type, ceoName, ceoEmail, profile, makerEmail, makerTel, makerHomepage, bankName, accountNumber, accountHolder " 
-				   + "from maker where userId = ?";
+				   + "from maker where userId = ( select userId from allproject where fundingId = ?)";
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, userId);
+			pstmt.setInt(1, fundingId);
 			rs = pstmt.executeQuery();
 			
 			if(rs.next()) {
@@ -423,7 +768,7 @@ public class fundingOpenDAO {
 		}catch(Exception e) {
 			System.out.println("getMakerDetail error : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		
 		return bean;
@@ -437,6 +782,7 @@ public class fundingOpenDAO {
 				   + "where userId = ?";
 		
 		try {
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1,  bean.getName());
 			pstmt.setString(2, bean.getType());
@@ -464,461 +810,269 @@ public class fundingOpenDAO {
 		}catch(Exception e) {
 			System.out.println("updateMakerInfo : " + e.toString());
 		}finally {
-			ResouceClose();
+			ResourceClose();
 		}
 		return result;
 	}
 	
-	//펀딩현황 페이지에 들어갈 각 정보 - 정지운 오류 여기서 남
-	public ReportJoin Report(int fundingId) {
-		ReportJoin r = new ReportJoin();
+
+	//(메이커 스튜디오, 메이커) 설정한 프로필을 member 테이블의 프로필로 설정
+	public void setProfile(String profile, String id) {
+		String sql = "update member set profile = ? where id = ?";
+		
 		try {
-			String sql = "select r.price, r.salesQuantity, a.startDate, "
-					   + "a.endDate, a.userId, a.fundingId, "
-					   + "a.regDate, f.title, f.salesTarget, f.categoryId, a.comment, f.storySummary "
-					   + "from allproject a join fundinginfo f "
-					   + "on a.fundingId = f.fundingId "
-					   + "join reward r on f.fundingId = r.fundingId "
-					   + "where f.fundingId = ?";
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, profile);
+			pstmt.setString(2, id);
+			pstmt.executeUpdate();
 			
+		}catch(Exception e) {
+			System.out.println("setProfile : " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+	}
+	
+ 	//(메이커스튜디오, 펀딩현황) 기본 정보 - 하유진, 정지운
+	public FundingReport getFundingReportInfo(int fundingId) {
+		FundingReport report = new FundingReport();
+		try {
+			String sql = "select f.fundingId, m.name, f.title, f.salesTarget, f.totalRevenue, (f.totalRevenue/f.salesTarget)*100 as achievement, " + 
+						 "f.startdate, f.enddate, datediff(f.enddate, now()) as daydiff, m.bankName, m.accountNumber, accountHolder " + 
+						 "from fundinginfo f join allproject a on f.fundingId = a.fundingId " + 
+						 "join maker m on a.userId = m.userId where a.fundingId = ?";
+			
+			con = ds.getConnection();
 			pstmt=con.prepareStatement(sql);
 			pstmt.setInt(1, fundingId);
 			rs=pstmt.executeQuery();
 			if(rs.next()) {
-				r.setCategoryId(rs.getInt("categoryId"));
-				r.setComment(rs.getString("comment"));
-				r.setUserId(rs.getString("userId"));
-				r.setFundingId(rs.getInt("fundingId"));
-				r.setRedDate(rs.getString("regDate"));
-				r.setTitle(rs.getString("title"));
-				r.setSalesTarget(rs.getInt("salesTarget"));
-				r.setStorySummary(rs.getString("storySummary"));
-				r.setStartDate(rs.getString("startDate"));
-				r.setEndDate(rs.getString("endDate"));
-				r.setPrice(rs.getInt("price"));
-				r.setSalesQuantity(rs.getInt("salesQuantity"));
-			}
-			return r;
-			
-		} catch (Exception e) {
-		System.out.println("Report error:" + e.toString());
-		 } finally {
-		 ResouceClose();
-		}
-		return null;
-	}
-	
-	 //펀딩현황 페이지 리워드 금액 * 판매된 개수 가져오기 - 정지운
-	 public List<ReportJoin> ListReport(int fundingId) {
-		 
-		 List<ReportJoin> abc = new ArrayList<ReportJoin>();
-			ReportJoin r = null;
-			try {
-				
-				String sql="select price, salesQuantity from reward where fundingId = ?";
-				pstmt=con.prepareStatement(sql);
-				pstmt.setInt(1, fundingId);
-				rs=pstmt.executeQuery();
-				while(rs.next()) {
-					r = new ReportJoin();
-					r.setPrice(rs.getInt("price"));
-					r.setSalesQuantity(rs.getInt("salesQuantity"));
-					abc.add(r);
-			    }
-				
-			} catch (Exception e) {
-			System.out.println("ListReport:" + e.toString());
-			 } finally {
-			 ResouceClose();
-			}
-			return abc;
-		}
-	 
-	 //펀딩현황 페이지 최근하루 판매금액,개수  금액은 배송비 포인트 제외된 최종결제금액 - 정지운
-	 public List<fundingorderBean> reportDate(int fundingId) {
-			
-		 List<fundingorderBean> repo = new ArrayList<fundingorderBean>();
-		 fundingorderBean r = null;
-			try {
-				
-				String sql="select a.amount, b.quantity from fundingorder a join fundingorderdetails b on a.orderId = b.orderId "
-						+ "where a.orderDate between date_add(now(), interval -1 day) and now() and fundingId = ?";
-				pstmt=con.prepareStatement(sql);
-				pstmt.setInt(1, fundingId);
-				rs=pstmt.executeQuery();
-				while(rs.next()) {
-					r = new fundingorderBean();
-					r.setAmount(rs.getInt("amount"));
-					r.setQuantity(rs.getInt("quantity"));
-					repo.add(r);
-			    }
-				
-			} catch (Exception e) {
-			System.out.println("ListReport:" + e.toString());
-			 } finally {
-			 ResouceClose();
-			}
-			return repo;
-		}
-	 
-	 //펀딩현황 페이지 최근일주일 판매금액,개수  금액은 배송비 포인트 제외된 최종결제금액 - 정지운
-	 public List<fundingorderBean> report7Date(int fundingId) {
-			
-		 List<fundingorderBean> repo = new ArrayList<fundingorderBean>();
-		 fundingorderBean r = null;
-			try {
-				
-				String sql="select a.amount, b.quantity from fundingorder a join fundingorderdetails b on a.orderId = b.orderId "
-						+ "where a.orderDate between date_add(now(), interval -7 day) and now() and fundingId = ?";
-				pstmt=con.prepareStatement(sql);
-				pstmt.setInt(1, fundingId);
-				rs=pstmt.executeQuery();
-				while(rs.next()) {
-					r = new fundingorderBean();
-					r.setAmount(rs.getInt("amount"));
-					r.setQuantity(rs.getInt("quantity"));
-					repo.add(r);
-			    }
-				
-			} catch (Exception e) {
-			System.out.println("ListReport:" + e.toString());
-			 } finally {
-			 ResouceClose();
-			}
-			return repo;
-		}
-
-	 //펀딩현황 그래프에 쓸 각종 리워드 정보가져오기 - 정지운
-	 public List<RewardBean> rewardList(int fundingId) {
-		 
-		 List<RewardBean> reward = new ArrayList<RewardBean>();
-		 RewardBean r = null;
-			try {
-				
-				String sql="select * from reward where fundingId = ?";
-				pstmt=con.prepareStatement(sql);
-				pstmt.setInt(1, fundingId);
-				rs=pstmt.executeQuery();
-				while(rs.next()) {
-					r = new RewardBean();
-					r.setName(rs.getString("name"));
-					r.setRewardDetail(rs.getString("rewardDetail"));
-					r.setSalesQuantity(rs.getInt("salesQuantity"));
-					reward.add(r);
-			    }
-				
-			} catch (Exception e) {
-			System.out.println("ListReport:" + e.toString());
-			 } finally {
-			 ResouceClose();
-			}
-			return reward;
-		}
-	 
-	 //펀딩하기 그래프에 쓸 내용 - 정지운
-	 public List<fundingorderBean> chartDate(int fundingId) {
-			
-		 List<fundingorderBean> chartDate = new ArrayList<fundingorderBean>();
-		 fundingorderBean r = null;
-			try {
-				
-				String sql="SELECT DATE(b.orderDate) AS date, "
-						+ "       sum(a.quantity)as sum "
-						+ "  FROM fundingorderdetails a join fundingorder b on a.orderId = b.orderId "
-						+ " where fundingId = ? GROUP BY date order by date ";
-				pstmt=con.prepareStatement(sql);
-				pstmt.setInt(1, fundingId);
-				rs=pstmt.executeQuery();
-				while(rs.next()) {
-					r = new fundingorderBean();
-					r.setOrderDate(rs.getString("date"));
-					r.setQuantity(rs.getInt("sum"));
-					chartDate.add(r);
-			    }
-				
-			} catch (Exception e) {
-			System.out.println("ListReport:" + e.toString());
-			 } finally {
-			 ResouceClose();
-			}
-			return chartDate;
-		}
-	 
-	 //결제페이지에 들어갈 펀딩정보와 리워드 정보가져오기 - 정지운
-	 public JoinFunding fundinginfo(int fundingId,int rewardId){
-	     JoinFunding mb = null;
-	     try {
-	       pstmt = con.prepareStatement("select f.title, r.price, r.rewardId, r.rewardOption, r.rewardDetail, r.deliveryFee,f.regDate from fundinginfo f join reward r on f.fundingId = r.fundingId where f.fundingId = ? and r.rewardId = ?");
-	 
-	       pstmt.setInt(1, fundingId);
-		   pstmt.setInt(2, rewardId);
-	       rs = pstmt.executeQuery();
-	       if (rs.next()) {
-		         mb = new JoinFunding();
-		         mb.setDeliveryFee(rs.getInt("deliveryFee"));
-		         mb.setPrice(rs.getInt("price"));
-		         mb.setRegDate(rs.getString("regDate"));
-		         mb.setRewardDetail(rs.getString("rewardDetail"));
-		         mb.setRewardOption(rs.getString("rewardOption"));
-		         mb.setTitle(rs.getString("title"));
-	       }
-	       return mb;
-	     } catch (Exception e) {
-	       System.out.println("fundinginfo:" + e.toString());
-	     } finally {
-	       ResouceClose();
-	     }
-	 
-	     return null;
-	   }
-
-	 //결제페이지에서 입력한 정보 디비에 넣기 - 정지운
-	 public int fundingOrder(fundingorderBean b, int fundingId) {
-	     int result = 0;
-	     String sql = "insert into fundingorder(userId, receiver, receiverPhone, receiverEmail, zipCode,addr1, addr2, Requests, cardNumber, ExpirationDate, birth, amount, orderId, usePoint, fundingId) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	     try
-	     {
-	       pstmt = con.prepareStatement(sql);
-	       pstmt.setString(1, b.getUserId());
-	       pstmt.setString(2, b.getReceiver());
-	       pstmt.setString(3, b.getReceiverPhone());
-	       pstmt.setString(4, b.getReceiverEmail());
-	       pstmt.setString(5, b.getZipCode());
-	       pstmt.setString(6, b.getAddr1());
-	       pstmt.setString(7, b.getAddr2());
-	       pstmt.setString(8, b.getRequests());
-	       pstmt.setString(9, b.getCardNumber());
-	       pstmt.setString(10, b.getExpirationDate());
-	       pstmt.setString(11, b.getBirth());
-	       pstmt.setInt(12, b.getAmount());
-	       pstmt.setString(13, b.getOrderId());
-		   pstmt.setInt(14, b.getUsePoint());
-		   pstmt.setInt(15, b.getFundingId());
-
-
-	       result = pstmt.executeUpdate();
-	 
-
-	       RewardBean mb = new RewardBean();
-	       if (result != 0) {
-	         pstmt = con.prepareStatement("select * from reward where fundingId = ?");
-				pstmt.setInt(1, fundingId);
-	         rs = pstmt.executeQuery();
-	         if (rs.next()) {
-	           mb.setDeliveryDate(rs.getTimestamp("deliveryDate"));
-	           mb.setName(rs.getString("name"));
-	           mb.setPrice(Integer.parseInt(rs.getString("price")));
-	           mb.setRewardDetail(rs.getString("rewardDetail"));
-	           mb.setRewardOption(rs.getString("rewardOption"));
-	         }
-	       }
-	 
-	     }
-	     catch (Exception e)
-	     {
-	       System.out.println("fundingOrder:" + e.toString());
-	     } finally {
-	       ResouceClose();
-	     }
-	     return result;
-	   }
-	 
-	 //결제확인 페이지에 보여질 정보가져오기 - 정지운
-	 public JoinFunding joinReward(int fundingId, int rewardId){
-	     JoinFunding mb = null;
-	     try {
-					
-			Context init = new InitialContext();
-			DataSource ds = (DataSource)init.lookup("java:comp/env/jdbc/goodfunding");
-			con = ds.getConnection();
-	        pstmt = con.prepareStatement("select r.name, r.price, r.deliveryDate, f.title, r.price, r.rewardOption, f.categoryId, a.endDate, r.rewardDetail, r.deliveryFee,f.regDate from fundinginfo f join reward r on "
-														+ "	f.fundingId = r.fundingId join allproject a on f.fundingId = a.fundingId where f.fundingId = ? and r.rewardId = ?");
-	       this.pstmt.setInt(1, fundingId);
-					pstmt.setInt(2, rewardId);
-	       this.rs = this.pstmt.executeQuery();
-	       if (this.rs.next()) {
-	         mb = new JoinFunding();
-	         mb.setDeliveryFee(this.rs.getInt("deliveryFee"));
-			 mb.setName(rs.getString("name"));
-			 mb.setPrice(rs.getInt("price"));
-			 mb.setEndDate(rs.getString("endDate"));
-			 mb.setCategoryId(rs.getInt("categoryId"));
-			 mb.setDeliveryDate(rs.getString("deliveryDate"));
-	         mb.setPrice(this.rs.getInt("price"));
-	         mb.setRegDate(this.rs.getString("regDate"));
-	         mb.setRewardDetail(this.rs.getString("rewardDetail"));
-	         mb.setRewardOption(this.rs.getString("rewardOption"));
-	         mb.setTitle(this.rs.getString("title"));
-	       }
-					con.close();
-	       return mb;
-
-	     } catch (Exception e) {
-	       System.out.println("joinReward:" + e.toString());
-	     } finally {
-	       ResouceClose();
-	     }
-	 
-	     return null;
-	}
-	 //결제후 리워드 개수증가 - 정지운
-	 public int salesQuantity(int salesQuantity, int fundingId, int rewardId){
-		 
-		    int result = 0;
-		    
-		    try{
-		    	Context init = new InitialContext();
-				DataSource ds = (DataSource)init.lookup("java:comp/env/jdbc/goodfunding");
-				con = ds.getConnection();
-				String sql = "update reward set salesQuantity = salesQuantity +? where fundingId = ? and rewardId = ?";
-		     
-			     pstmt = con.prepareStatement(sql);
-			     pstmt.setInt(1, salesQuantity);
-			     pstmt.setInt(2, fundingId);
-			     pstmt.setInt(3, rewardId);
-			     result = pstmt.executeUpdate();
-			     con.close();
-			    
-		   }
-		    		
-		   catch (Exception e) {
-			      System.out.println("salesQuantity:" + e.toString());
-			    } finally {
-			      ResouceClose();
-		   }
-			
-			    return result;
-		   }
-	 //결제후 펀딩오더디테일 테이블에 데이터 넣어주기 - 정지운
-	 public int fundingorderdetails(fundingOrderDetailBean f) {
-			int result = 0;
-				try {
-				String sql = "insert into fundingorderdetails (orderId,optionId,quantity) values (?,?,?)";
-				
-				pstmt=con.prepareStatement(sql);
-				pstmt.setString(1, f.getOrderId());
-				pstmt.setInt(2, f.getOptionId());
-				System.out.println(f.getOrderId());
-				pstmt.setInt(3,f.getQuantity());
-				
-				result = pstmt.executeUpdate();
-				
-			}catch(Exception e) {
-				System.out.println("allproject:" + e.toString());
-			}finally{
-				ResouceClose();
-			}
-			return 0;
-		}
-	 
-	 	//펀딩하기 페이지에 보여질 해당펀딩 종료날짜  - 정지운
-	 	public JoinFunding EndDate(int fundingId) {
-			JoinFunding j = new JoinFunding();
-			String sql = "select endDate from allproject where fundingId = ?";
-			
-				try {
-				pstmt=con.prepareStatement(sql);
-				pstmt.setInt(1, fundingId);
-				rs = pstmt.executeQuery();
-				if(rs.next()) {
-					j.setEndDate(rs.getString("endDate"));
-				}
-				
-			}catch(Exception e) {
-				System.out.println("EndDate:" + e.toString());
-			}finally{
-				ResouceClose();
-			}
-			return j;
-			}
-	 	
-	 	//펀딩하기 리워드 제공정보에 보여질 메어키의 입력값 가져오기.
-	 	//rewarddetail2테이블은 메이커가 리워드 제공정보 입력시 들어갈 테이블로, 테이블이름이 중첩되서 2로 지음. 무슨말이죠...?
-	 	public List<fundingDetail_returnBean> Detail_return(int fundingId) {
-			List<fundingDetail_returnBean> detail = new ArrayList<>();
-			fundingDetail_returnBean f = null;
-			
-			try {
-				String sql = "select d.DetailId, d.categoryId, d.DetailName, r.DetailContent, r.regDate "
-							+ "from rewarddetail d join rewarddetailreg r "  
-							+ "on (d.categoryId = r.categoryId and d.DetailId = r.DetailId) " 
-							+ "where r.fundingId = ?";
-						
-				pstmt=con.prepareStatement(sql);
-				pstmt.setInt(1, fundingId);
-				rs=pstmt.executeQuery();
-				while(rs.next()) {
-					f = new fundingDetail_returnBean();
-					f.setCategoryId(rs.getInt("categoryId"));
-					f.setDetailContent(rs.getString("DetailContent"));
-					f.setDetailId(rs.getInt("DetailId"));
-					f.setDetailName(rs.getString("DetailName"));
-					f.setRegDate(rs.getString("regDate"));
-					detail.add(f);
-				}	
-			
-			}catch(Exception e) {
-				System.out.println("Detail_return: " + e.toString());
-			}finally {
-				ResouceClose();
-			}
+				report.setFundingId(rs.getInt("fundingId"));
+				report.setMakerName(rs.getString("name"));
+				report.setFundingTitle(rs.getString("title"));
+				report.setSalesTarget(rs.getInt("salesTarget"));
+				report.setTotalRevenue(rs.getInt("totalRevenue"));
+				report.setAchievement(rs.getInt("achievement"));
+				report.setStartDate(rs.getTimestamp("startdate"));
+				report.setEndDate(rs.getTimestamp("enddate"));
+				int dayDiff = rs.getInt("daydiff");
+				if(dayDiff < 0)
+					report.setDayDiff(0);
+				else
+					report.setDayDiff(dayDiff);
+				report.setBankName(rs.getString("bankName"));
+				report.setAccountNumber(rs.getString("accountNumber"));
+				report.setAccountHolder(rs.getString("accountHolder"));
+			}	
 		
-			return detail;
+		}catch(Exception e) {
+			System.out.println("getFundingReportInfo: " + e.toString());
+		}finally {
+			ResourceClose();
 		}
-	 
-	 	//펀딩하기 페이지에 보여질 메이커 정보들 - 정지운
-	 	public MakerBean getMaker(String id)
-	 	   {
-	 	     MakerBean mb = null;
-	 	     try {
-	 	       pstmt = this.con.prepareStatement("select * from maker where userId = ? ");
-	 	 	   pstmt.setString(1, id);
-	 	       rs = pstmt.executeQuery();
-	 	 
-	 	       if (rs.next()) {
-	 	         mb = new MakerBean();
-	 	         mb.setProfile(this.rs.getString("profile"));
-	 	         mb.setCeoEmail(this.rs.getString("ceoEmail"));
-	 	         mb.setCeoName(this.rs.getString("ceoName"));
-	 	         mb.setMakerEmail(this.rs.getString("makerEmail"));
-	 	         mb.setMakerHomepage(this.rs.getString("makerHomepage"));
-	 	         mb.setMakerTel(this.rs.getString("makerTel"));
-	 	         mb.setBankName(this.rs.getString("bankName"));
-	 	         mb.setAccountHolder(this.rs.getString("accountHolder"));
-	 	         mb.setAccountNumber(this.rs.getString("accountNumber"));
-	 	       }
-	 	       return mb;
-	 	     } catch (Exception e) {
-	 	       System.out.println("getMaker:" + e.toString());
-	 	     } finally {
-	 	       ResouceClose();
-	 	     }
-	 	 
-	 	     return null;
-	 	   }
-	 	
-	 	//펀딩하기 스토리 페이지에 보여질 스토리내용 가져오기 - 정지운
-	 	public FundingInfoBean fundingStory(int fundingId) {
-	 		FundingInfoBean p = new FundingInfoBean();
-	 		String sql = "select title, storyMainImg, storySummary, storyContent from fundinginfo where fundingId = ?";
-	 		
-	 			try {
-	 			pstmt=con.prepareStatement(sql);
-	 			pstmt.setInt(1, fundingId);
-	 			rs = pstmt.executeQuery();
-	 			if(rs.next()) {
-	 				p.setTitle(rs.getString("title"));
-	 				p.setStoryContent(rs.getString("storyContent"));
-	 				p.setStoryMainImg(rs.getString("storyMainImg"));
-	 				p.setStorySummary(rs.getString("storySummary"));
-	 			}
-	 			
-	 		}catch(Exception e) {
-	 			System.out.println("EndDate:" + e.toString());
-	 		}finally{    
-	 			ResouceClose();
-	 		}
-	 		return p;
-	 		}
+		
+		return report;
+	}
+
+	//(메이커스튜디오, 펀딩현황) 오늘의 매출 금액 - 하유진, 정지운
+	public int getTodayRevenue(int fundingId) {
+		int todayRevenue = 0;
+		try {
+			String sql = "select sum(finalAmount) as todayRevenue from fundingorder " + 
+					 	 "where fundingId=? and date(orderDate) = date(now()) " + 
+					 	 "group by fundingId";
+			
+			con = ds.getConnection();
+			pstmt=con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			rs=pstmt.executeQuery();
+			if(rs.next()) {
+				todayRevenue = rs.getInt("todayRevenue");
+			}	
+		
+		}catch(Exception e) {
+			System.out.println("getTodayRevenue: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return todayRevenue;
+	}
 	
+	//(메이커스튜디오, 펀딩현황) 날짜별 편딩현황 - 하유진, 정지운
+	public List<FundingStatistic> getQuantityByDate(int fundingId) {
+		List<FundingStatistic> statisticList = new ArrayList<FundingStatistic>();
+		FundingStatistic statistic = null;
+		try {
+			String sql = "select date_format(t.date, '%m-%d') as date, ifnull(o.actual, 0) as actual from temp_date t " + 
+						 "left outer join ( " + 
+						 	"select date_format(orderDate, '%Y-%m-%d') as orderDate, sum(finalAmount) as actual " + 
+						 	"from fundingorder " + 
+						 	"where fundingId=? and cancel=0 " + 
+						 	"group by date_format(orderDate, '%Y-%m-%d') " + 
+						 ") o " + 
+						 "on t.date = o.orderDate " + 
+						 "where t.date >= (select startdate from fundinginfo where fundingId=?) and t.date <= (select enddate from fundinginfo where fundingId=?) " + 
+						 "order by t.date asc";
+			
+			con = ds.getConnection();
+			pstmt=con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			pstmt.setInt(2, fundingId);
+			pstmt.setInt(3, fundingId);
+			rs=pstmt.executeQuery();
+			while(rs.next()) {
+				statistic = new FundingStatistic();
+				statistic.setDate(rs.getString("date"));
+				statistic.setActual(rs.getInt("actual"));
+				statisticList.add(statistic);
+			}	
+		
+		}catch(Exception e) {
+			System.out.println("getQuantityByDate: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return statisticList;
+	}
+
+	//(메이커스튜디오, 펀딩현황) 옵션별 편딩현황 - 하유진, 정지운
+	public List<FundingStatistic> getQuantityByOption(int fundingId) {
+		List<FundingStatistic> statisticList = new ArrayList<FundingStatistic>();
+		FundingStatistic statistic = null;
+		try {
+			String sql = "select r.rewardOption, ifnull(od.quantity, 0) as quantity " + 
+						 "from reward r left outer join ( " + 
+						 	"select rewardId, sum(quantity) as quantity from fundingorderdetails " + 
+						 	"where orderId in (select orderId from fundingorder where fundingId=? and cancel=0) " + 
+						 	"group by rewardId) as od " + 
+						 "on r.rewardId = od.rewardId " + 
+						 "where r.fundingId = ?";
+			
+			con = ds.getConnection();
+			pstmt=con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			pstmt.setInt(2, fundingId);
+			rs=pstmt.executeQuery();
+			while(rs.next()) {
+				statistic = new FundingStatistic();
+				statistic.setRewardOption(rs.getString("rewardOption"));
+				statistic.setQuantity(rs.getInt("quantity"));
+				statisticList.add(statistic);
+			}	
+		
+		}catch(Exception e) {
+			System.out.println("getQuantityByOption: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return statisticList;
+	}
+
+	//(메이커스튜디오, 펀딩현황) 오늘의 옵션별 편딩현황 - 하유진, 정지운
+	public List<FundingStatistic> getTodayQuantity(int fundingId) {
+		List<FundingStatistic> statisticList = new ArrayList<FundingStatistic>();
+		FundingStatistic statistic = null;
+		
+		try {
+			String sql = "select r.rewardOption, ifnull(od.quantity, 0) as quantity " + 
+					 	 "from reward r left outer join  " + 
+					 	 	"(select rewardId, sum(quantity) as quantity from fundingorderdetails " + 
+					 	 	"where orderId in (select orderId from fundingorder where date(orderDate) = date(now()) and cancel=0) " + 
+					 	 	"group by rewardId ) as od  " + 
+					 	 "on r.rewardId = od.rewardId " + 
+					 	 "where r.fundingId = ?";
+			
+			con = ds.getConnection();
+			pstmt=con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			rs=pstmt.executeQuery();
+			while(rs.next()) {
+				statistic = new FundingStatistic();
+				statistic.setRewardOption(rs.getString("rewardOption"));
+				statistic.setQuantity(rs.getInt("quantity"));
+				statisticList.add(statistic); 
+			}	
+			
+		}catch(Exception e) {
+			System.out.println("getTodayQuantity: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return statisticList;
+		
+	}
+
+	//(메이커스튜디오, 펀딩결과) 주문 개수 - 하유진, 정지운
+	public int getOrderCount(int fundingId) {
+		int orderCount = 0;
+		try {
+			String sql = "select count(orderId) as orderCount from fundingorder where fundingId=?";
+			
+			con = ds.getConnection();
+			pstmt=con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			rs=pstmt.executeQuery();
+			if(rs.next()) {
+				orderCount = rs.getInt("orderCount");
+			}	
+		
+		}catch(Exception e) {
+			System.out.println("getOrderCount: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return orderCount;
+	}
+	
+	//(메이커스튜디오, 펀딩결과) 취소 주문 개수 - 하유진, 정지운
+	public int getCancelCount(int fundingId) {
+		int cancelCount = 0;
+		try {
+			String sql = "select count(orderId) as cancelCount from fundingorder where cancel = 1 and fundingId=?";
+			
+			con = ds.getConnection();
+			pstmt=con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			rs=pstmt.executeQuery();
+			if(rs.next()) {
+				cancelCount = rs.getInt("cancelCount");
+			}	
+		
+		}catch(Exception e) {
+			System.out.println("getCancelCount: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return cancelCount;
+	}
+
+	//(메이커스튜디오, 펀딩결과) 펀딩 정산 정보 - 하유진, 정지운
+	public FundingResult getFundingResult(int fundingId) {
+		FundingResult result = new FundingResult();
+		try {
+			String sql = "select sum(donation) as donation, sum(usedPoint) as usedPoint, sum(deliveryFee) as deliveryFee, " + 
+						 "sum(finalAmount) as finalAmount, (sum(usedPoint)+sum(finalAmount))*0.07 as commission " + 
+						 "from fundingorder where cancel = 0 and fundingId=?";
+			
+			con = ds.getConnection();
+			pstmt=con.prepareStatement(sql);
+			pstmt.setInt(1, fundingId);
+			rs=pstmt.executeQuery();
+			if(rs.next()) {
+				result.setDonation(rs.getInt("donation"));
+				result.setUsedPoint(rs.getInt("usedPoint"));
+				result.setDeliveryFee(rs.getInt("deliveryFee"));
+				result.setFinalAmount(rs.getInt("finalAmount"));
+				result.setCommission(rs.getInt("commission"));
+			}	
+		
+		}catch(Exception e) {
+			System.out.println("getCancelCount: " + e.toString());
+		}finally {
+			ResourceClose();
+		}
+		return result;
+	}
+
 }

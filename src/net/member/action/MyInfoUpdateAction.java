@@ -18,9 +18,9 @@ public class MyInfoUpdateAction implements Action{
 		request.setCharacterEncoding("utf-8");
 		response.setContentType("text/html; charset=UTF-8");
 		
-		String id = request.getParameter("id");
-		String phone = request.getParameter("phone");
-		String email = request.getParameter("email");
+		String id = request.getParameter("myId");
+		String phone = request.getParameter("myPhone");
+		String email = request.getParameter("myEmail");
 		
 		MemberBean mb = new MemberBean();
 		mb.setId(id);
@@ -28,12 +28,7 @@ public class MyInfoUpdateAction implements Action{
 		mb.setEmail(email);
 		
 		int result = new MemberDAO().updateMember(mb);
-		
-		ActionForward forward = new ActionForward();
-		if(result ==1){
-			forward.setRedirect(true);
-			forward.setPath("MyInfoEdit.me");
-		}else{
+		if(result == 0){
 			PrintWriter out=response.getWriter();
 			out.println("<script>");
 			out.println("alert('정보 변경에 실패하였습니다.');");
@@ -41,6 +36,10 @@ public class MyInfoUpdateAction implements Action{
 			out.println("</script>");
 			out.close();
 		}
+		
+		ActionForward forward = new ActionForward();
+		forward.setRedirect(true);
+		forward.setPath("myInfo.me");
 		
 		return forward;
 	}

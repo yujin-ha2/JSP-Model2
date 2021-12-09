@@ -9,7 +9,7 @@ import net.action.Action;
 import net.action.ActionForward;
 import net.action.StatusName;
 import net.funding.open.db.RewardBean;
-import net.funding.open.db.fundingOpenDAO;
+import net.funding.open.db.FundingOpenDAO;
 import net.funding.open.db.myProjectBean;
 import net.member.db.MemberBean;
 import net.member.db.MemberDAO;
@@ -21,18 +21,23 @@ public class MypageAction implements Action {
 		
 		//세션에 저장된 사용자 id 받아오기
 		String id = (String)request.getSession().getAttribute("id"); 
+		System.out.println("id: " + id);
 
 		MemberDAO dao = new MemberDAO();
-		MemberBean mb = new MemberBean();
 		
-		mb = new MemberDAO().InfoMember(id);
+		MemberBean memberBean = new MemberDAO().InfoMember(id);
 		int type = dao.UserTypeCheck(id);
 
 		String path;
 		if(type == 1) { 
 			path = "member/mypage_maker.jsp";
-			//확인하기
-			List<myProjectBean> list = new fundingOpenDAO().getProjectList(id);
+			
+			//메이커 프로필로 변경
+			String profile = new MemberDAO().getMakerProfile(id); 
+			memberBean.setProfile(profile);
+			
+			FundingOpenDAO fdao = new FundingOpenDAO();
+			List<myProjectBean> list = fdao.getProjectList(id);
 			
 			for(int i=0; i<list.size(); i++) {
 				String name = list.get(i).getStatus();
@@ -43,11 +48,10 @@ public class MypageAction implements Action {
 		}else { 		 
 			path = "member/mypage_support.jsp";
 			int fundingCount = new MemberDAO().myFundingCount(id);
-			
 			request.setAttribute("fundingCount", fundingCount);
 		}
 		
-		request.setAttribute("mb", mb);
+		request.setAttribute("member", memberBean);
 		
 		ActionForward forward = new ActionForward();
 		forward.setRedirect(false);

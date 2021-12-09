@@ -4,9 +4,9 @@
 	name="jdbc/funding"
 	auth="Container"
 	type="javax.sql.DataSource"
-	driverClassName="com.mysql.jdbc.Driver"
-	url="jdbc:mysql://localhost:3305/funding"
-	username="root"
-	password="mysql8^^"
+	driverClassName="com.mysql.cj.jdbc.Driver"
+	url="jdbc:mysql://localhost/itwillbs12"
+	username="itwillbs12"
+	password="itwillbs8030909"
 	/>
 </context>

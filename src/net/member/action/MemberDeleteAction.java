@@ -18,25 +18,15 @@ public class MemberDeleteAction implements Action {
 		
 		request.setCharacterEncoding("utf-8");
 		
-		String id = request.getParameter("id");
-		String pwd = request.getParameter("pwd");
+		String id = request.getParameter("delId");
+		String pwd = request.getParameter("delPwd");
 		
 		MemberBean mb = new MemberBean();
 		mb.setId(id);
 		mb.setPwd(pwd);
 		
 		int result = new MemberDAO().deleteMember(mb);
-		
-		if(result == 1) {
-			//세션값 초기화
-			request.getSession().invalidate();
-			
-			ActionForward forward = new ActionForward();
-			forward.setPath("MyInfoEdit.me");
-			forward.setRedirect(false);
-			
-			return forward;
-		}else {
+		if(result == 0) {
 			response.setContentType("text/html; charset=UTF-8");
 			PrintWriter out=response.getWriter();
 			out.println("<script>");
@@ -46,6 +36,14 @@ public class MemberDeleteAction implements Action {
 			out.close();
 			return null;
 		}
+		
+		request.getSession().invalidate();	//세션값 초기화
+		
+		ActionForward forward = new ActionForward();
+		forward.setPath("main.do");
+		forward.setRedirect(false);
+		
+		return forward;
 	}
 
 }

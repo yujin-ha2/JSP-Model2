@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.action.Action;
 import net.action.ActionForward;
+import net.action.StatusName;
 import net.funding.open.db.AllProject;
-import net.funding.open.db.fundingOpenDAO;
+import net.funding.open.db.FundingOpenDAO;
 
 public class makerStudioMainAciton implements Action {
 
@@ -20,26 +21,31 @@ public class makerStudioMainAciton implements Action {
 		
 		request.setCharacterEncoding("UTF-8");
 		String id = (String)request.getSession().getAttribute("id");
-		int fundingId = Integer.parseInt(request.getParameter("no"));
+		int fundingId = Integer.parseInt(request.getParameter("fundingId"));
 		
-		fundingOpenDAO openDao = new fundingOpenDAO();
+		FundingOpenDAO openDao = new FundingOpenDAO();
 
 		String status = "";
 		List<String> statusBtnList = new ArrayList<String>();
 		List<String> writeList = new ArrayList<String>();
+		List<String> statusList = new ArrayList<String>();
+		StatusName statusName = new StatusName();
 		
 		if(fundingId == 0) {
 			//프로젝트 생성
 			fundingId = openDao.insertNewProject(id);
 			
 			status = "prepare";
+			statusList.add("prepare");
+			statusList.add(statusName.get("prepare"));
+			statusList.add(statusName.get("prepareDetail"));
 			statusBtnList = Arrays.asList("작성하기", "작성하기", "작성하기", "작성하기", "작성하기");
 			writeList = Arrays.asList("작성전", "작성전", "작성전", "작성전", "작성전"); 
 			
 		}else {
-			List<String> statusList = openDao.getProjectStatus(fundingId);
+			List<String> isRegList = openDao.getProjectStatus(fundingId);
 		
-			if(statusList == null) {
+			if(isRegList == null) {
 				response.setContentType("text/html; charset=UTF-8");
 				PrintWriter out=response.getWriter();
 				out.println("<script>");
@@ -54,17 +60,20 @@ public class makerStudioMainAciton implements Action {
 	//			public static List<String> ReviseBtnList = Arrays.asList("수정하기", "수정하기", "수정하기", "수정하기", "수정하기"); 
 	//			public static List<String> ApproveBtnList = Arrays.asList("확인하기", "수정하기", "확인하기", "확인하기", "확인하기"); 
 	//			public static List<String> writeLis1t = Arrays.asList("작성완료", "작성완료", "작성완료", "작성완료", "작성완료");
-				status = statusList.get(5);
+				status = isRegList.get(5);
+				statusList.add(status);
+				statusList.add(statusName.get(status));
+				statusList.add(statusName.get(status+"Detail"));
 				if(status.equals("prepare")) {
 					
 					for(int i=0; i<5; i++) {
-						statusBtnList.add(statusList.get(i).equals("0") ? "작성하기": "수정하기");
-						writeList.add(statusList.get(i).equals("0") ? "작성전": "작성완료");
+						statusBtnList.add(isRegList.get(i).equals("0") ? "작성하기": "수정하기");
+						writeList.add(isRegList.get(i).equals("0") ? "작성전": "작성완료");
 					}
 				}else if(status.equals("reject")) {
 					statusBtnList = Arrays.asList("수정하기", "수정하기", "수정하기", "수정하기", "수정하기");
 					writeList = Arrays.asList("작성완료", "작성완료", "작성완료", "작성완료", "작성완료");
-				}else if(status.equals("approve") || status.equals("apply")) {
+				}else if(status.equals("approve")) {
 					statusBtnList = Arrays.asList("확인하기", "수정하기", "확인하기", "확인하기", "확인하기");
 					writeList = Arrays.asList("작성완료", "작성완료", "작성완료", "작성완료", "작성완료"); 
 				}else {
@@ -77,7 +86,7 @@ public class makerStudioMainAciton implements Action {
 		
 		request.setAttribute("statusBtnList", statusBtnList);
 		request.setAttribute("writeList", writeList);
-		request.setAttribute("status", status);
+		request.setAttribute("statusList", statusList);
 		request.setAttribute("fundingId", fundingId);
 		
 		ActionForward forward = new ActionForward();

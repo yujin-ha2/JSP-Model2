@@ -17,16 +17,18 @@ public class AdminMemberGeneralListAction extends HttpServlet implements Action 
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		request.setCharacterEncoding("UTF-8");
-		ActionForward forward = new ActionForward();
 
-		Vector<MemberBean> g = new adminDAO().getGeneralMemberList(); 
-		Vector<MemberBean> se = new adminDAO().getSellerMemberList(); 
-		Vector<MemberBean> su = new adminDAO().getSuspendMemberList();
+		Vector<MemberBean> generalMembers = new adminDAO().getGeneralMemberList(); 
+		Vector<MemberBean> sellerMembers = new adminDAO().getSellerMemberList(); 
+		Vector<MemberBean> suspendedMembers = new adminDAO().getSuspendMemberList();
+		Vector<MemberBean> adminMembers = new adminDAO().getAdminMemberList();
 		  
-		request.setAttribute("g", g); 
-		request.setAttribute("se", se);
- 	    request.setAttribute("su", su);
+		request.setAttribute("generalMembers", generalMembers); 
+		request.setAttribute("sellerMembers", sellerMembers);
+ 	    request.setAttribute("suspendedMembers", suspendedMembers);
+ 	    request.setAttribute("adminMembers", adminMembers);
 
+ 	    ActionForward forward = new ActionForward();
 		forward.setRedirect(false);
 		forward.setPath("admin/adminMember.jsp");
 

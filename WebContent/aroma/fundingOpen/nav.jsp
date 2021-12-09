@@ -11,20 +11,17 @@
   <link rel="stylesheet" href="${contextPath}/assets/vendors/css/vendor.bundle.base.css">
   <link rel="stylesheet" href="${contextPath}/assets/vendors/css/vendor.bundle.addons.css">
   <link rel="stylesheet" href="${contextPath}/assets/css/shared/style.css">
-  <link rel="stylesheet" href="${contextPath}/assets/css/demo_1/style.css">  
+  <link rel="stylesheet" href="${contextPath}/assets/css/demo_1/style.css">   
 </head>
 <body>
-<%
-	String fundingid = request.getParameter("fundingId");
-%>
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
    <ul class="nav">
      <li class="nav-item nav-profile">
        <a href="#" class="nav-link">
-         <div class="profile-image">
-           <img class="img-xs rounded-circle" src="${contextPath}/assets/images/face8.jpg" alt="profile image">
+         <%-- <div class="profile-image">
+           <img class="img-xs rounded-circle" src="${contextPath}/img/noProfile_M.png" alt="profile image">
            <div class="dot-indicator bg-success"></div>
-         </div>
+         </div> --%>
          <div class="text-wrapper">
            <p class="profile-name">${sessionScope.id}님</p>
            <p class="designation">프로젝트를 시작해보세요</p>
@@ -33,11 +30,11 @@
      </li>
      <li class="nav-item nav-category">Main Menu</li>
      <li class="nav-item">
-       <a class="nav-link" href="makerStudioMain.on?no=${param.fundingId}">
+       <a class="nav-link" href="${contextPath}/makerStudioMain.on?fundingId=${param.fundingId}">
          <i class="menu-icon typcn typcn-document-text"></i>
          <span class="menu-title">Dashboard</span>
        </a>
-     </li>
+     </li> 
      <li class="nav-item">
        <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
          <i class="menu-icon typcn typcn-coffee"></i>
@@ -71,7 +68,7 @@
        </a>
      </li>
      <li class="nav-item">
-       <a class="nav-link" href="${contextPath}/fundingPayment.on?fundingId=${param.fundingId}">
+       <a class="nav-link" href="${contextPath}/fundingResult.on?fundingId=${param.fundingId}">
          <i class="menu-icon typcn typcn-th-large-outline"></i>
          <span class="menu-title">결제 현황</span>
        </a>

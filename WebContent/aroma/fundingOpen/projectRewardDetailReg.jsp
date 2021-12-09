@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>makerStudio</title>
+    <title>메이커 스튜디오</title>
 	<c:set var="contextPath" value="${pageContext.request.contextPath}/aroma"/>
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/ionicons/dist/css/ionicons.css">
@@ -43,11 +43,67 @@
 	}
     </style>
     <script type="text/javascript">
-		function popup(){
-			var url = "${contextPath}/fundingOpen/rewardDetailPopup.jsp";
-			var name = "rewardpopup";
-			var option = "width = 700, height = 850, top = 20,  location = no, scrolbar=no, toolbar=no, resizable=no, status = no, left=30, right=30 "
-			window.open(url, name, option);
+		function selectCategory() {
+			 var selectBox = document.getElementById("category");
+			 var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+			 
+			 var id = $("#category option:selected").val();
+			 var data = {categoryId : id}
+				$.ajax({
+					type: 'post',
+					url: 'conveyCategorydetail.on',
+					data: JSON.stringify(data),
+					contentType: "application/json; charset=utf-8",
+					dataType: "json"
+				}).done(function(result) {
+					var list = result;
+                   	var html ='';
+                   	
+                   	$("#Categories").empty();
+                   	
+               		html += '<table class="table table-hover">';
+               		html += '<thead><tr>';
+               		html += '<th style="width: 30%">항목</th>';
+               		html += '<th style="width: 30%">예시 및 부가설명</th>';
+               		html += '<th style="width: 40%">입력란</th>';
+               		html += '</tr></thead>';
+               		html += '<tbody>';
+               		
+                   	$.each(result,function(index, item){
+                   		html += '<tr>';
+                   		html += '<td style="word-break:break-all" width="30%">'+item.DetailName+'</td>';
+                   		html += '<td style="word-break:break-all" width="30%">'+item.Example+'</td>';
+                   		html += '<td style="word-break:break-all" width="40%"><input type="text" class="form-control" id="answer'+item.DetailId+'" name="answer'+item.DetailId+'"></td>';
+                   		html += '</tr>';
+                    });
+                   	
+                   	html += '</tbody>';
+               		html += '</table>';
+                   
+                    $("#Categories").append(html);
+                    
+				}).fail(function() {
+					console.log("fail");
+				});
+		}
+		
+		function inputCheck() {
+			var isRight = true;
+	   		$("#rewardDetailForm").find("input[type=text]").each(function(index, item){
+	               // 아무값없이 띄어쓰기만 있을 때도 빈 값으로 체크되도록 trim() 함수 호출
+	               if($(this).val().trim() == '') {
+	                   isRight = false;
+	               }
+		    });
+	   		if($("#policy").val() == ''){
+	   			isRight = false;
+	   		}
+	   		
+	        if(isRight) {
+	        	$("#rewardDetailForm").submit();
+	        }else{
+	        	alert("모든 항목을 입력해주세요.");
+	        }	
 		}
     </script>
 </head>
@@ -55,47 +111,27 @@
    <div class="container-scroller">
       <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center" style="padding-top: 20px;">
-          <a class="navbar-brand brand-logo" href="#">makerStudio</a>
+          <a class="navbar-brand brand-logo" href="${contextPath}/makerStudioMain.on?fundingId=${fundingId}">makerStudio</a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-center">
+           <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+	           	<div class="profile-image">
+	              <span style="padding-top: auto;">${sessionScope.id}님의 프로젝트 번호는 ${fundingId}</span>
+	            </div>
+            </li>
+            </ul>
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item dropdown">
-              <a class="nav-link count-indicator" id="messageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
-                <i class="mdi mdi-bell-outline"></i>
-                <span class="count">7</span>
-              </a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-toggle="dropdown">
-                <i class="mdi mdi-email-outline"></i>
-                <span class="count bg-success">3</span>
-              </a>
-            </li>
-            <li class="nav-item dropdown d-none d-xl-inline-block user-dropdown">
-              <a class="nav-link dropdown-toggle" id="UserDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
-                <img class="img-xs rounded-circle" src="../assets/images/face8.jpg" alt="Profile image"> </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
-                <div class="dropdown-header text-center">
-                  <img class="img-md rounded-circle" src="../assets/images/face8.jpg" alt="Profile image">
-                  <p class="mb-1 mt-3 font-weight-semibold">Allen Moreno</p>
-                  <p class="font-weight-light text-muted mb-0">allenmoreno@gmail.com</p>
-                </div>
-                <a class="dropdown-item">My Profile <span class="badge badge-pill badge-danger">1</span><i class="dropdown-item-icon ti-dashboard"></i></a>
-                <a class="dropdown-item">Messages<i class="dropdown-item-icon ti-comment-alt"></i></a>
-                <a class="dropdown-item">Activity<i class="dropdown-item-icon ti-location-arrow"></i></a>
-                <a class="dropdown-item">FAQ<i class="dropdown-item-icon ti-help-alt"></i></a>
-                <a class="dropdown-item">Sign Out<i class="dropdown-item-icon ti-power-off"></i></a>
-              </div>
+            <li class="nav-item">
+              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw" onclick="location.href='myprojectList.on'">나가기</button>
             </li>
           </ul>
-          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-            <span class="mdi mdi-menu"></span>
-          </button>
         </div>
       </nav>
-      <!-- partial -->
       <div class="container-fluid page-body-wrapper">
-        <jsp:include page="nav.jsp"></jsp:include>
+        <jsp:include page="nav.jsp">
+        <jsp:param name="fundingId" value="${fundingId}"/> 
+       	</jsp:include>
         
         <!-- partial -->
         <div class="main-panel">
@@ -107,10 +143,12 @@
                   	<div>
                     <h4 class="card-title" style="font-size: 36px; font-weight: 700; margin-bottom: 10px;">리워드 정보 제공</h4>
                     <p class="col-md-7" style="padding-left:0; font-size: 16px; margin-bottom: 32px; line-height: 1.41;">
-                    	서포터에게 리워드 정보/교환/펀딩금반환/AS 정책을 고지하여야 합니다. 서포터에게 하는 약속인 만큼, 프로젝트 오픈 후에는 수정이 불가하니 신중하게 작성하세요.
+                    	서포터에게 리워드 정보를 고지하여야 합니다. 서포터에게 하는 약속인 만큼, 프로젝트 오픈 후에는 수정이 불가하니 신중하게 작성하세요.
                     </p>
                     </div>
-                    <form class="forms-sample">
+                    <form class="forms-sample" id="rewardDetailForm" action="${contextPath}/rewardDetailReg.on" method="post">
+                    <input type="hidden" name="cmd" value="register">
+                    <input type="hidden" id="fundingId" name="fundingId" value="${fundingId}">
 					<div class="row" style="margin-bottom: 20px;">
                         <div class="col-md-7">
                           <div class="form-group">
@@ -121,8 +159,18 @@
                            		- 서포터에게 리워드를 제공하는 경우, 리워드 정보 제공 고시를 반드시 입력해야 합니다.
                            	</p>
                             <div>
-                            	<input type="button" class="input-file-button col-md-2" style="font-size: 17px;" onclick="popup();" value="추가하기">
+                            	<select class="form-control form-control-lg" name="category" id="category" style="width: 60%">
+                            		<option value="0">리워드 카테고리 종류</option>
+                            		<option value="100">전자제품</option>
+                            		<option value="200">패션</option>
+                            		<option value="300">영유아</option>
+                            		<option value="400">식품</option>
+                            		<option value="500">뷰티</option>
+                            	</select>
+                            	<input type="button" class="input-file-button col-md-1" style="font-size: 17px;" onclick="selectCategory();" value="선택">
 							</div>
+                          </div>
+                          <div style="margin: 30px 0;" id="Categories">
                           </div>
                         </div>
                     </div>
@@ -130,13 +178,13 @@
                         <div class="col-md-7">
                           <div class="form-group">
                             <p class="col-form-label" style="font-size: 16px; font-weight: 400;	">
-                            	사용 중 발생한 하자에 대한 A/S 정책(선택사항)
+                            	사용 중 발생한 하자에 대한 A/S 정책
                             </p>                            
                            	<p style="font-size: 13px; color: #90949c;">
                            		- 초기 하자(리워드 배송 완료 후 7일 이내에 발생)가 아닌 서포터가 사용 중에 발생하는 하자를 어떻게 처리할 것인지에 대한 정책을 작성하세요.
                            	</p>
                             <div>
-                            	<textarea rows="7" cols="" class="form-control" 
+                            	<textarea rows="7" cols="" class="form-control" id="policy" name="policy"
                             	placeholder="(예시)
 -보증기간: 리워드 수령일로부터  1년
 -규정: 정상적인 상태에서 사용중 발생한 제품하자인 경우 1:1교체
@@ -147,7 +195,7 @@
                         </div>
                     </div>
                     <div class="col-md-3" style="padding-left: 0;">
-                    	<button class="saveBtn">저장하기</button>
+                    	<input type="button" class="saveBtn" value="저장하기" onclick="inputCheck()">
                     </div>
                     </form>
                   </div>

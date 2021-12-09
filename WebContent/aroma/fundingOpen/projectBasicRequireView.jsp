@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>makerStudio</title>
+    <title>메이커 스튜디오</title>
     <c:set var="contextPath" value="${pageContext.request.contextPath}/aroma"/>
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/ionicons/dist/css/ionicons.css">
@@ -45,31 +45,30 @@
     <div class="container-scroller">
       <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center" style="padding-top: 20px;">
-          <a class="navbar-brand brand-logo" href="#">makerStudio</a>
+          <a class="navbar-brand brand-logo" href="${contextPath}/makerStudioMain.on?fundingId=${fundingId}">makerStudio</a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-center">
-        	<%-- 프로제트 번호: ${projectId} --%>
            <ul class="navbar-nav mr-auto">
             <li class="nav-item">
 	           	<div class="profile-image">
-	              <img class="img-xs rounded-circle" src="${contextPath}/assets/images/face8.jpg" alt="profile image">
-	              <span style="margin-left: 10px; padding-top: auto;">${sessionScope.id}님의 프로젝트 번호는 ${bean.fundingId}</span>
+	              <span style="padding-top: auto;">${sessionScope.id}님의 프로젝트 번호는 ${fundingId}</span>
 	            </div>
             </li>
             </ul>
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw">미리보기</button>
-            </li>
-            <li class="nav-item">
-              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw">나가기</button>
+              <c:set var="exit" value="location.href='myprojectList.on'"/>
+              <c:if test="${sessionScope.authority eq '관리자'}">
+              	<c:set var="exit" value="location.href='AdminApproveListAction.ad'"/>
+              </c:if>
+              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw" onclick="${exit}">나가기</button>
             </li>
           </ul>
         </div>
       </nav>
       <div class="container-fluid page-body-wrapper">
         <jsp:include page="nav.jsp">
-        <jsp:param name="fundingId" value="${bean.fundingId}"/> 
+        <jsp:param name="fundingId" value="${fundingId}"/> 
         </jsp:include>
         
         <!-- partial -->

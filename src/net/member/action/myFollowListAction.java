@@ -12,18 +12,19 @@ import net.funding.open.db.MakerBean;
 import net.member.db.MemberBean;
 import net.member.db.MemberDAO;
 
-public class myFollowListAction implements Action {
+public class MyFollowListAction implements Action {
 
 	@Override
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		String id = (String)request.getSession().getAttribute("id"); 
+		String type = request.getParameter("type");
 
-		Vector<MakerBean> v = new MemberDAO().myFollowList(id); 
-		
-		request.setAttribute("v", v);
+		Vector<MakerBean> makerVector = new MemberDAO().myFollowList(id, type); 
+		request.setAttribute("makers", makerVector);
+		request.setAttribute("type", type);
 	
-		ActionForward forward=new ActionForward();
+		ActionForward forward = new ActionForward();
 		forward.setRedirect(false);
 		forward.setPath("member/myFollowList.jsp");
 

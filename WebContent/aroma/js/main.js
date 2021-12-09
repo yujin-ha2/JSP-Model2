@@ -6,9 +6,7 @@ $(function() {
     forceHeight: false
   });
 
-  //------- Active Nice Select --------//
-  $('select').niceSelect();
-
+  /*
   //------- hero carousel -------//
   $(".hero-carousel").owlCarousel({
     items:3,
@@ -65,7 +63,7 @@ $(function() {
     nav:false,
     dots:false
   });
-
+*/
   //------- mailchimp --------//  
 	function mailChimp() {
 		$('#mc_embed_signup').find('form').ajaxChimp();

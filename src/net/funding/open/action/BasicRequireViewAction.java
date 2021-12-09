@@ -5,9 +5,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.action.Action;
 import net.action.ActionForward;
-import net.funding.db.fundingDAO;
+import net.funding.db.FundingDAO;
 import net.funding.open.db.RequirementsBean;
-import net.funding.open.db.fundingOpenDAO;
+import net.funding.open.db.FundingOpenDAO;
 
 public class BasicRequireViewAction implements Action {
 
@@ -16,7 +16,7 @@ public class BasicRequireViewAction implements Action {
 		int fundingId = Integer.parseInt(request.getParameter("fundingId"));
 		String mode = request.getParameter("mode");
 		
-		RequirementsBean bean = new fundingOpenDAO().getRequirement(fundingId);
+		RequirementsBean bean = new FundingOpenDAO().getRequirement(fundingId);
 		request.setAttribute("bean", bean);
 		
 		if(mode.equals("update"))

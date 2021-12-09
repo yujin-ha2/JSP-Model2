@@ -18,19 +18,9 @@ public class ShowIdAction implements Action {
 		request.setCharacterEncoding("utf-8");
 		
 		String email = request.getParameter("email");	
+		String userId = new MemberDAO().findId(email);
 		
-		String id = new MemberDAO().findId(email);
-
-		ActionForward forward = new ActionForward();
-		
-		if(id != null) {
-			request.setAttribute("id", id);
-			
-			forward.setRedirect(false);
-		    forward.setPath("member/showId.jsp");
-		    return forward;
-		}else {
-			
+		if(userId == null) {
 			PrintWriter out=response.getWriter();
 			out.println("<script>");
 			out.println("history.back();");
@@ -40,7 +30,11 @@ public class ShowIdAction implements Action {
 			return null;
 		}
 		
-	    
+		request.setAttribute("userId", userId);
+		
+		ActionForward forward = new ActionForward();
+		forward.setRedirect(false);
+	    forward.setPath("member/find_id_pwd_form2.jsp");
+	    return forward;
 	}
-
 }

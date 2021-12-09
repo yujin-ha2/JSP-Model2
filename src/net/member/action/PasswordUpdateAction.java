@@ -18,22 +18,17 @@ public class PasswordUpdateAction implements Action {
 		request.setCharacterEncoding("utf-8");
 		response.setContentType("text/html;charset=UTF-8");
 		
-		String id = (String)request.getParameter("id");
-		String pwd = (String)request.getParameter("pwd");
-		System.out.println("id:" + id + ", pwd:" + pwd);
+		String userId = request.getParameter("userId");
+		String pwd = request.getParameter("pwd");
+		String type = request.getParameter("type");
 		
 		MemberBean mb = new MemberBean();
-		mb.setId(id);
+		mb.setId(userId);
 		mb.setPwd(pwd);
 		
 		int result = new MemberDAO().updatePwd(mb);
 		
-		if(result == 1){
-			ActionForward forward = new ActionForward();
-			forward.setRedirect(true);
-			forward.setPath("MyInfoEdit.me");
-			return forward;
-		}else {
+		if(result == 0){
 			PrintWriter out=response.getWriter();
 			out.println("<script>");
 			out.println("alert('비밀번호 변경에 실패하였습니다.');");
@@ -43,6 +38,12 @@ public class PasswordUpdateAction implements Action {
 			return null;
 		}
 		
+		String path = (type.equals("findPwd")) ? "findIdPwd.me" : "myInfo.me";
+		
+		ActionForward forward = new ActionForward();
+		forward.setRedirect(true);
+		forward.setPath(path);
+		
+		return forward;
 	}
-
 }

@@ -12,18 +12,17 @@ public class AdminApproveAction implements Action {
 	@Override
 	public ActionForward execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		request.setCharacterEncoding("UTF-8");
-		ActionForward forward = new ActionForward(); 
 		
-		String num = request.getParameter("num");
+		int fundingId = Integer.parseInt(request.getParameter("fundingId"));
 		String comment = (String)request.getParameter("comment");
-		int btnValue = Integer.parseInt(request.getParameter("btnValue"));
+		System.out.println("comment: " + comment);
+		String projectStatus = request.getParameter("projectStatus");
 		
-		adminDAO dao = new adminDAO();
-		dao.ApproveChangeApproveState(num, comment, btnValue);
+		int result = new adminDAO().ApproveChangeApproveState(fundingId, comment, projectStatus);
 		 
-		 forward.setRedirect(false);
-		 forward.setPath("AdminApproveListAction.ad");
-		
+		ActionForward forward = new ActionForward(); 
+		forward.setRedirect(false);  
+		forward.setPath("AdminApproveListAction.ad");
 		return forward;
 	}
 

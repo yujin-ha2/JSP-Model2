@@ -10,7 +10,7 @@ import net.action.Action;
 import net.action.ActionForward;
 import net.funding.open.db.AllProject;
 import net.funding.open.db.MakerBean;
-import net.funding.open.db.fundingOpenDAO;
+import net.funding.open.db.FundingOpenDAO;
 
 public class makerEasyRegAction implements Action {
 
@@ -27,7 +27,7 @@ public class makerEasyRegAction implements Action {
 		maker.setName(name);
 		maker.setType(type);
 		
-		fundingOpenDAO openDao = new fundingOpenDAO();
+		FundingOpenDAO openDao = new FundingOpenDAO();
 		boolean result = openDao.insertEasyMaker(maker);
 	
 		if(result == false) {
@@ -35,7 +35,7 @@ public class makerEasyRegAction implements Action {
 			PrintWriter out=response.getWriter();
 			out.println("<script>");
 			out.println("alert('메이커 등록에 실패하였습니다');");
-			out.println("location.href='fundingOpenMain.on';");
+			out.println("history.back();");
 			out.println("</script>");
 			out.close();
 			return null;

@@ -1,7 +1,5 @@
 package net.member.action;
 
-import java.io.PrintWriter;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -19,7 +17,7 @@ public class MemberLogoutAction implements Action {
 		
 		ActionForward forward=new ActionForward();	
 		forward.setRedirect(true);
-		forward.setPath("./Main.me"); 
+		forward.setPath("main.do"); 
 		return forward;	
 	}
 

@@ -1,11 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>makerStudio</title>
+    <title>메이커 스튜디오</title>
     <c:set var="contextPath" value="${pageContext.request.contextPath}/aroma"/>
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/ionicons/dist/css/ionicons.css">
@@ -52,31 +54,30 @@
     <div class="container-scroller">
       <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center" style="padding-top: 20px;">
-          <a class="navbar-brand brand-logo" href="#">makerStudio</a>
+          <a class="navbar-brand brand-logo" href="${contextPath}/makerStudioMain.on?fundingId=${fundingId}">makerStudio</a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-center">
-        	<%-- 프로제트 번호: ${projectId} --%>
            <ul class="navbar-nav mr-auto">
             <li class="nav-item">
 	           	<div class="profile-image">
-	              <img class="img-xs rounded-circle" src="${contextPath}/assets/images/face8.jpg" alt="profile image">
-	              <span style="margin-left: 10px; padding-top: auto;">${sessionScope.id}님의 프로젝트 번호는 ${bean.fundingId}</span>
+	              <span style="padding-top: auto;">${sessionScope.id}님의 프로젝트 번호는 ${fundingId}</span>
 	            </div>
             </li>
             </ul>
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw">미리보기</button>
-            </li>
-            <li class="nav-item">
-              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw">나가기</button>
+              <c:set var="exit" value="location.href='myprojectList.on'"/>
+              <c:if test="${sessionScope.authority eq '관리자'}">
+              	<c:set var="exit" value="location.href='AdminApproveListAction.ad'"/>
+              </c:if>
+              <button type="button" class="btn btn-outline-primary btn-rounded btn-fw" onclick="${exit}">나가기</button>
             </li>
           </ul>
         </div>
       </nav>
       <div class="container-fluid page-body-wrapper">
         <jsp:include page="nav.jsp">
-        <jsp:param name="fundingId" value="${bean.fundingId}"/> 
+        <jsp:param name="fundingId" value="${fundingId}"/> 
         </jsp:include>
         
         <!-- partial -->
@@ -93,7 +94,7 @@
                     </p>
                     </div>
                     <form class="forms-sample" action="./BasicInfoUpdateForm.on" method="post" >
-                    <input type="hidden" name="fundingId" value="${bean.fundingId}">
+                    <input type="hidden" name="fundingId" value="${fundingId}">
                       <div class="row" style="margin-bottom: 20px;">
                         <div class="col-md-7">
                           <div class="form-group">
@@ -114,8 +115,24 @@
                             	<p style="font-size: 13px; color: #90949c;">- 최소 50만 원 ~ 최대 1억 원으로 설정하세요.</p>
                             </div>
                             <div>
-								<input type="text" class="form-control" style="display: inline-block; width: 95%" name="salesTarget" id="salesTarget" value="${bean.salesTarget}" readonly="readonly">
+                            	<fmt:formatNumber var="target" value="${bean.salesTarget}" pattern="#,###"/>
+								<input type="text" class="form-control" style="display: inline-block; width: 95%" name="salesTarget" id="salesTarget" value="${target}" readonly="readonly">
                             	<span style="padding-left: 10px;">원</span>                            
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 20px;">
+                        <div class="col-md-7">
+                          <div class="form-group">
+                            <p class="col-form-label" style="font-size: 16px; font-weight: 400;	">
+                            	프로젝트 일정	
+                            </p>                            
+                            <div>
+                            	<c:set var="sdate"><fmt:formatDate value="${bean.startdate}" pattern="yyyy-MM-dd"/></c:set>
+                            	<c:set var="edate"><fmt:formatDate value="${bean.enddate}" pattern="yyyy-MM-dd"/></c:set>
+								<input type="text" class="form-control" style="display: inline-block; width: 30%" name="startdate" id="startdate" value="${sdate}" readonly="readonly"> -
+								<input type="text" class="form-control" style="display: inline-block; width: 30%" name="enddate" id="enddate" value="${edate}" readonly="readonly">
                             </div>
                           </div>
                         </div>
@@ -130,7 +147,7 @@
                             	<select class="form-control form-control-lg" name="category" id="category" readonly 
                             	        onFocus='this.initialSelect = this.selectedIndex;' onChange='this.selectedIndex = this.initialSelect;' >
                             		<option value="선택">선택</option>
-                            		<option value="100">가전제품</option>
+                            		<option value="100">전자제품</option>
                             		<option value="200">패션</option>
                             		<option value="300">영유아</option>
                             		<option value="400">식품</option>
@@ -205,7 +222,7 @@
                              <div>
                             	<p style="font-size: 13px; color: #90949c;">- 진정성있고 매력적인 스토리를 작성해보세요.</p>
                             </div>
-                            <textarea class="form-control" name="story"  id="story" rows="10" cols="100"  style="height:412px; display: none;" readonly="readonly">${bean.storyContent}</textarea>
+                            <textarea class="form-control" name="story"  id="story" rows="10" cols="100"  style="height:412px; width: 100%;" readonly="readonly">${bean.storyContent}</textarea>
                           </div>
                         </div>
                         </div>

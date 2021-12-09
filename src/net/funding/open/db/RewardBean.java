@@ -1,10 +1,8 @@
 package net.funding.open.db;
 
-import java.sql.Timestamp;
-
 public class RewardBean {
 
-	private String rewardId;			//?
+	private int rewardId;				//리워드 번호
 	private int fundingId;				//펀딩 번호
 	private int price;					//금액	
 	private String name;				//리워드명
@@ -12,13 +10,13 @@ public class RewardBean {
 	private String rewardOption;		//옵션조건
 	private int deliveryFee;			//배송비
 	private int salesQuantity;			//제한 수량
-	private int Quantity;				//?
-	private Timestamp deliveryDate;		//배송 시작일
+	private int remainingQuantity;		//판매되고 남은 수량
+	private String deliveryDate;		//배송 시작일
 	
-	public String getRewardId() {
+	public int getRewardId() {
 		return rewardId;
 	}
-	public void setRewardId(String rewardId) {
+	public void setRewardId(int rewardId) {
 		this.rewardId = rewardId;
 	}
 	public int getFundingId() {
@@ -57,22 +55,22 @@ public class RewardBean {
 	public void setDeliveryFee(int deliveryFee) {
 		this.deliveryFee = deliveryFee;
 	}
-	public int getQuantity() {
-		return Quantity;
-	}
-	public void setQuantity(int quantity) {
-		Quantity = quantity;
-	}
 	public int getSalesQuantity() {
 		return salesQuantity;
 	}
 	public void setSalesQuantity(int salesQuantity) {
 		this.salesQuantity = salesQuantity;
 	}
-	public Timestamp getDeliveryDate() {
+	public int getRemainingQuantity() {
+		return remainingQuantity;
+	}
+	public void setRemainingQuantity(int remainingQuantity) {
+		this.remainingQuantity = remainingQuantity;
+	}
+	public String getDeliveryDate() {
 		return deliveryDate;
 	}
-	public void setDeliveryDate(Timestamp deliveryDate) {
+	public void setDeliveryDate(String deliveryDate) {
 		this.deliveryDate = deliveryDate;
 	}
 }
