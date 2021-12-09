@@ -15,6 +15,15 @@ local.properties
 .loadpath
 .recommenders
 
+# Eclipse Core
+.project
+
+# JDT-specific (Eclipse Java Development Tool)
+.classpath
+
+# DB password
+context.xml
+
 # External tool builders
 .externalToolBuilders/
 
@@ -89,15 +98,6 @@ local.properties
 *.zip
 *.tar.gz
 *.rar
-
-# Eclipse Core
-.project
-
-# JDT-specific (Eclipse Java Development Tool)
-.classpath
-
-# DB password
-context.xml
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
