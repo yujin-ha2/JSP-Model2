@@ -68,11 +68,14 @@ public class FundingDAO {
 		Timestamp currentDate = new Timestamp(System.currentTimeMillis());
 		
 		try {
+			/*
 			String sql = "select f.fundingId, f.title, f.categoryId, f.mainImg, a.status, datediff(f.enddate, now()) as daydiff " 
 					   + "from allproject a join fundinginfo f "
 					   + "on a.fundingId = f.fundingId "
 					   + "where a.userId = ? and a.status in ('start', 'success', 'fail')";
+			*/
 			
+			String sql = "select * from searchFunding where makerName = (select name from maker where userId = ?)"; 
 			con = ds.getConnection();	
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, makerId);
@@ -84,6 +87,8 @@ public class FundingDAO {
 				bean.setFundingTitle(rs.getString("title"));
 				bean.setCategoryName(category.get(rs.getInt("categoryId")));
 				bean.setMainImg(rs.getString("mainImg"));
+				bean.setTotalRevenue(rs.getInt("totalRevenue"));
+				bean.setAchievement(rs.getInt("achievement"));
 				bean.setStatusName(status.get(rs.getString("status")));
 				bean.setDayDiff(rs.getInt("daydiff"));
 				fundingVector.add(bean);
@@ -778,7 +783,7 @@ public class FundingDAO {
 	public List<PaymentBean> getSupportList(int fundingId) {
 		List<PaymentBean> paymentList = new ArrayList<PaymentBean>();
 		PaymentBean payment = null;
-		String sql = "select m.name, m.profile, o.totalAmount, o.orderDate from fundingorder o " +
+		String sql = "select m.name, ifnull(m.profile, 'noImage.png') as profile, o.totalAmount, o.orderDate from fundingorder o " +
 					 "join member m on o.userId = m.id where o.fundingId = ?";
 		try {
 			con = ds.getConnection();
@@ -815,7 +820,7 @@ public class FundingDAO {
 			
 			while(rs.next()){
 				bean = new BannerBean();
-				bean.setImg(rs.getString("img"));
+				bean.setSavedFileName(rs.getString("savedName"));
 				bean.setLink(rs.getString("link"));
 				banners.add(bean);
 			}

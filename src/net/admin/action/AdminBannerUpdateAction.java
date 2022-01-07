@@ -2,6 +2,7 @@ package net.admin.action;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +43,7 @@ public class AdminBannerUpdateAction implements Action{
 			 System.out.println("링크"+i+"번: "+linkArr[i]); 
 		}
 		
+		//이걸로 저장하고 히든인풋으로 저장하자
 		Enumeration<String> fileNames = multi.getFileNames();
 		while( fileNames.hasMoreElements() ) {
 			String name = (String)fileNames.nextElement();
@@ -50,17 +52,51 @@ public class AdminBannerUpdateAction implements Action{
 		}	
 		*/
 		
+		/*
 		Vector<BannerBean> banners = new Vector<BannerBean>();
 		BannerBean bean = null;
 		String[] linkArr = multi.getParameterValues("link");
-		for(int i=0; i<linkArr.length; i++) {
+		for(int i=1; i<linkArr.length; i++) {
 			System.out.println("링크"+i+"번: "+linkArr[i]); 
-			String filename = multi.getFilesystemName("bannerImgFile"+(i+1));
+			String filename = multi.getFilesystemName("bannerImgFile"+(i));
 			System.out.println("파일"+i+"번: "+filename);
 			
 			bean = new BannerBean();
 			bean.setImg(filename);
 			bean.setLink(linkArr[i]);
+			banners.add(bean);
+		}
+		
+		
+		Enumeration<String> fileNames = multi.getFileNames();
+		while( fileNames.hasMoreElements() ) {
+			String name = (String)fileNames.nextElement();
+			String SavedName = multi.getFilesystemName(name);
+			String originalName = multi.getOriginalFileName(name);
+			System.out.println("name: " + name + ", SavedName: " + SavedName + ", originalName: " + originalName);
+		}	
+		*/
+		
+		Vector<BannerBean> banners = new Vector<BannerBean>();
+		BannerBean bean = null;
+		int bannerCount = Integer.parseInt(multi.getParameter("bannerCount"));
+		for(int i=1; i<=bannerCount; i++) {
+			String originalName = "";
+			String savedName = "";
+			if(multi.getOriginalFileName("bannerImgFile"+i) != null) {
+				originalName = multi.getOriginalFileName("bannerImgFile"+i);
+				savedName = multi.getFilesystemName("bannerImgFile"+i);
+			}else {
+				originalName = multi.getParameter("fileName"+i);
+				savedName = multi.getParameter("savedFileName"+i);
+			}
+			
+			String link = multi.getParameter("link"+i);
+			
+			bean = new BannerBean();
+			bean.setSavedFileName(savedName);
+			bean.setOriginalFileName(originalName);
+			bean.setLink(link);
 			banners.add(bean);
 		}
 		

@@ -64,7 +64,7 @@ public class FundingOpenDAO {
 			int result = pstmt.executeUpdate();
 			
 			if(result == 1 ) {
-				sql = "update member set makerNo = (select makerNo from maker where userId = '"+maker.getUserId()+"') where id = ?";
+				sql = "update member set makerNo = (select makerNo from maker where userId = '"+maker.getUserId()+"'), authority='ÆÇ¸ÅÀÚ' where id = ?";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setString(1, maker.getUserId());
 				pstmt.executeUpdate();
@@ -112,7 +112,8 @@ public class FundingOpenDAO {
 			int result = pstmt.executeUpdate();
 			
 			if(result == 1) {
-				sql = "select fundingId from allproject where userId = ? order by regDate desc limit 1";
+				//sql = "select fundingId from allproject where userId = ? order by regDate desc limit 1";
+				sql = "select max(fundingId) as fundingId from allproject group by userId having userId=?";  
 				pstmt = con.prepareStatement(sql);
 				pstmt.setString(1, id);
 				rs = pstmt.executeQuery();
@@ -146,11 +147,13 @@ public class FundingOpenDAO {
 					"on a.userId = m.userId " + 
 					"where not exists ( select fundingId " +
 										"from fundinginfo " +
-										"where fundingId = a.fundingId )";	
+										"where fundingId = a.fundingId ) " +
+					"and a.userId = ?";						
 		try {
 			con = ds.getConnection();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, id);
+			pstmt.setString(2, id);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				bean = new myProjectBean();

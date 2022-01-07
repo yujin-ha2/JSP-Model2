@@ -17,15 +17,24 @@
   <link rel="stylesheet" href="${contextPath}/css/style.css">
   <script type="text/javascript">
 	function readURL(obj) {
+		console.log("id : " + obj.id)
 		var index = (obj.id).substring(13);
+		console.log("index: " + index);
 		var bannerImg = $("#bannerTr" + index).find('img'); 
 		var imgName = $("#bannerTr" + index).find('#fileName');
+		//var fileName = $("#bannerTr" + index).find('#fileName'+index);
+		
+		//console.log("bannerImg_src: " + $(bannerImg).attr("src"));
+		console.log("imgName: " + $(imgName).text());
+		
  		var reader = new FileReader();
 	    reader.onload = function(e) {
-	    	$(bannerImg).attr('src', e.target.result)
+	    	$(bannerImg).attr('src', e.target.result);
 	    };
 	    reader.readAsDataURL(obj.files[0]);
-	    $(imgName).text(obj.files[0].name);	
+	    $(imgName).text(obj.files[0].name);
+	    //fileName.val(obj.files[0].name);
+	    
  	}
 	
 	function deleteBanner(obj) {
@@ -44,12 +53,12 @@
 		
 		var html = "";
 		html += "<tr id='bannerTr"+count+"'>";
-		html += "<td width='15%' id='fileName' style='vertical-align: middle;'></td>";
+		html += "<td width='15%' id='fileName' style='vertical-align: middle;'><input type='hidden' id='fileName"+count+"' name='fileName"+count+"'/></td>";
 		html += "<td width='40%'>";
 		html += "<img src='http://placehold.it/400x200/ffffff/BDBDBD?text=Preview' id='bannerImg' name='bannerImg' width='100%' height='110px' style='border: 1px solid #BDBDBD'>";
 		html += "</td>"
 		html += "<td width='30%'>"
-		html += "<textarea rows='4' id='link' name='link' style='width: 100%;'></textarea>";
+		html += "<textarea rows='4' id='link"+count+"' name='link"+count+"' style='width: 100%;'></textarea>";
 		html += "</td>"
 		html += "<td width='15%' style='vertical-align: middle;'>";
 		html += "<label class='btn btn-outline-primary btn-sm' for='bannerImgFile"+count+"' style='margin-bottom: 0; margin-right: 5px;'>배너수정</label>";
@@ -63,20 +72,37 @@
 	}
 	
 	function checked() {
-		
+		var count = $('#bannerTableTbody tr').length;
+		$("#bannerCount").val(count);
+		console.log("배너 개수: " + $("#bannerCount").val());
 	}
 </script>
 <style type="text/css">
-  .nav-link{
-      color: white;
-  }
-  .nav-link:hover{
-      color:white;
-  }
-</style>
+	.nav-link{
+	  color: white;
+	}
+	.nav-link:hover{
+	  color:white;
+	}
+    #wrapper{
+	  display: flex; 
+	  min-height: 90%; 
+	  flex-direction: column;
+	}
+	.main-content{
+		flex: 1;
+	}
+
+	html,body{ 
+		margin:0; 
+		padding:0; 
+		width:100%; 
+		height:100%;
+	}
+  </style>
 </head>
 <body>
- 
+<div id="wrapper">
   <ul class="nav nav-tabs" id="myTab" role="tablist" style="background-color: #3549EC;">
         <li class="nav-item">
             <a class="nav-link" href="${contextPath}/MemberManagement.ad" aria-selected="false">회원 관리</a>
@@ -106,6 +132,7 @@
        <p style="text-align: left; margin:15px 0 30px 0;">메인 페이지의 슬라이드 배너 목록입니다.</p>
        
        <form method="post" name="form" enctype="multipart/form-data" action="${contextPath}/AdminBannerUpdateAction.ad" onsubmit="return checked()">
+       		<input type="hidden" id="bannerCount" name="bannerCount">
        		<table class="table" style="text-align: center;">
 	        	<thead class="thead">
 	          		<tr>
@@ -119,12 +146,14 @@
 	          	<tbody id="bannerTableTbody">
 	          		<c:if test="${empty banners}">
 	          		<tr id="bannerTr1">
-	          			<td width="15%" id="fileName" style="vertical-align: middle;"></td>
+	          			<td width="15%" id="fileName" style="vertical-align: middle;">
+	          				<input type="hidden" id="fileName1" name="fileName1" value=""/>
+	          			</td>
 	          			<td width="40%">
 	          				<img src="http://placehold.it/400x200/ffffff/BDBDBD?text=Preview" id="bannerImg" name="bannerImg" width="100%" height="110px" style="border: 1px solid #BDBDBD">
 	          			</td>
 	          			<td width="30%">
-	          				<textarea rows="4" id="link" name="link" style="width: 100%;"></textarea>
+	          				<textarea rows="4" id="link1" name="link1" style="width: 100%;"></textarea>
 	          			</td>
 	          			<td width="15%" style="vertical-align: middle;">
 	          				<label class="btn btn-outline-primary btn-sm" for="bannerImgFile1" style="margin-bottom: 0;">배너수정</label>
@@ -135,16 +164,20 @@
 	          		</c:if>
 	          		<c:forEach var="banner" items="${banners}" varStatus="status">
 	          		<tr id="bannerTr${status.count}">
-	          			<td width="15%" id="fileName" style="vertical-align: middle;">${banner.img}</td>
+	          			<td width="15%" id="fileName" style="vertical-align: middle;">
+	          				${banner.originalFileName}
+	          				<input type="hidden" id="fileName${status.count}" name="fileName${status.count}" value="${banner.originalFileName}"/>
+	          				<input type="hidden" id="savedFileName${status.count}" name="savedFileName${status.count}" value="${banner.savedFileName}"/>
+	          			</td>
 	          			<td width="40%">
-	          				<img src="${pageContext.request.contextPath}/bannerUpload/${banner.img}" id="bannerImg" name="bannerImg" width="100%" height="110px" style="border: 1px solid #BDBDBD">
+	          				<img src="${pageContext.request.contextPath}/bannerUpload/${banner.savedFileName}" id="bannerImg" name="bannerImg" width="100%" height="110px" style="border: 1px solid #BDBDBD">
 	          			</td>
 	          			<td width="30%">
-	          				<textarea rows="4" id="link" name="link" style="width: 100%;">${banner.link}</textarea>
+	          				<textarea rows="4" id="link${status.count}" name="link${status.count}" style="width: 100%;">${banner.link}</textarea>
 	          			</td>
 	          			<td width="15%" style="vertical-align: middle;">
-	          				<label class="btn btn-outline-primary btn-sm" for="bannerImgFile" style="margin-bottom: 0; margin-right: 5px;">배너수정</label>
-							<input type="file" id="bannerImgFile" name="bannerImgFile" style="display: none;" onchange="readURL(this);" />
+	          				<label class="btn btn-outline-primary btn-sm" for="bannerImgFile${status.count}" style="margin-bottom: 0; margin-right: 5px;">배너수정</label>
+							<input type="file" id="bannerImgFile${status.count}" name="bannerImgFile${status.count}" style="display: none;" onchange="readURL(this);" />
 	          				<input type="button" id="deleteBtn" value="삭제" class="btn btn-outline-primary btn-sm" onclick="deleteBanner(this);" >
 	          			</td>
 	          		</tr>
@@ -158,8 +191,9 @@
 	   </form>
     </div>
   </section>
-
-  <jsp:include page="../bottom.jsp" />
-
+</div>
+<footer>
+	<jsp:include page="../bottom.jsp" />
+</footer>
 </body>
 </html>

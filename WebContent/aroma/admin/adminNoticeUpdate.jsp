@@ -25,11 +25,25 @@
     .nav-link:hover{
         color:white;
     }
-    
-</style>
+    #wrapper{
+	  display: flex; 
+	  min-height: 90%; 
+	  flex-direction: column;
+	}
+	.main-content{
+		flex: 1;
+	}
+
+	html,body{ 
+		margin:0; 
+		padding:0; 
+		width:100%; 
+		height:100%;
+	}
+  </style>
 </head>
 <body>
-
+<div id="wrapper">
 	<ul class="nav nav-tabs" id="myTab" role="tablist" style="background-color: #3549EC;">
         <li class="nav-item">
             <a class="nav-link" href="${contextPath}/MemberManagement.ad" aria-selected="false">회원 관리</a>
@@ -54,7 +68,7 @@
 	</ul>
 
     <!-- start 관리자 메뉴 -->
- 	<section class="order_details section-margin--small">
+ 	<section style="margin: 50px 0 100px 0;">
     	<div class="container">
          	<h3 style="text-align: left">공지사항 관리</h3>
          	<p style="text-align: left; margin-top: 15px">공지사항을 관리하는 곳입니다.</p>
@@ -82,9 +96,10 @@
 			</form>
 		</div>
 	</section>
-
-
+</div>
+<footer>
   <jsp:include page="../bottom.jsp" />
+</footer>
   
   <script type="text/javascript">
 	var oEditors = [];

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -142,8 +143,9 @@
 							    		</div>
 									</div>
 									<div style="display:block; height: 3px; width: 100%; background-color: #00b2b2;"></div>
-									<span style="font-size: 17px; color:#00b2b2; font-weight: 700;">3000%</span>
-									<span style="font-size: 14px; color:#90949c; font-weight: 500; ">6,546,000</span>
+									<span style="font-size: 17px; color:#00b2b2; font-weight: 700;">${funding.achievement}%</span>
+									<fmt:formatNumber var="totalRevenue" value="${funding.totalRevenue}" pattern="#,###"/>
+									<span style="font-size: 14px; color:#90949c; font-weight: 500; ">${totalRevenue}</span>
 									<c:set var="detail" value="${funding.dayDiff}"/>
 									<c:if test="${funding.statusName ne 'start'}">
 									<c:set var="detail" value="${funding.statusName}"/>

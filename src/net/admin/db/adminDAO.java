@@ -307,7 +307,8 @@ public class adminDAO {
 			while(rs.next()) {
 				bean = new BannerBean();
 				bean.setBannerId(rs.getInt("bannerId"));
-				bean.setImg(rs.getString("img"));
+				bean.setSavedFileName(rs.getString("savedName"));
+				bean.setOriginalFileName(rs.getString("originalName"));
 				bean.setLink(rs.getString("link"));
 				
 				banners.add(bean);
@@ -330,11 +331,12 @@ public class adminDAO {
 			pstmt = con.prepareStatement(sql);
 			pstmt.executeUpdate();
 			
-			sql = "insert into banner(img, link) values(?, ?)";
+			sql = "insert into banner(originalName, savedName, link) values(?, ?, ?)";
 			for(BannerBean bean : list) {
 				pstmt = con.prepareStatement(sql);
-				pstmt.setString(1, bean.getImg());
-				pstmt.setString(2, bean.getLink());
+				pstmt.setString(1, bean.getOriginalFileName());
+				pstmt.setString(2, bean.getSavedFileName());
+				pstmt.setString(3, bean.getLink());
 				result = pstmt.executeUpdate();
 			}
 			

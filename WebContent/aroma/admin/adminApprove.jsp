@@ -51,9 +51,25 @@
     .nav-link:hover{
         color:white;
     }
+    #wrapper{
+	  display: flex; 
+	  min-height: 90%; 
+	  flex-direction: column;
+	}
+	.main-content{
+		flex: 1;
+	}
+
+	html,body{ 
+		margin:0; 
+		padding:0; 
+		width:100%; 
+		height:100%;
+	}
   </style>
 </head>
 <body>
+<div id='wrapper'>
 	<ul class="nav nav-tabs" id="myTab" role="tablist" style="background-color: #3549EC;">
         <li class="nav-item">
             <a class="nav-link" href="${contextPath}/MemberManagement.ad" aria-selected="false">회원 관리</a>
@@ -77,7 +93,7 @@
 		</li>
 	</ul>
 
-  	<section class="order_details section-margin--small">
+  	<section class="order_details section-margin--small main-content" >
     <div class="container">
         <h3 style="text-align: left">승인관리</h3>
         <p style="text-align: left; margin-top: 15px">승인 관리가 필요한 글 목록입니다.</p>
@@ -118,7 +134,9 @@
         </div>
     </div>
   </section>
-
-  <jsp:include page="../bottom.jsp" />
+</div> 
+<footer>
+	<jsp:include page="../bottom.jsp" />
+</footer>
 </body>
 </html>

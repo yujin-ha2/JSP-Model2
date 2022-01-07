@@ -18,7 +18,7 @@ $(function() {
 	$("#searchInput").on("keyup",function(key){
 	    if(key.keyCode==13) {
 	        var keyword = $("#searchInput").val();
-	        location.href='${contextPath}/fundingListAction.do?keyword='+keyword;
+	        location.href='${contextPath}/fundingList.do?keyword='+keyword;
 	    }
 	});
 });

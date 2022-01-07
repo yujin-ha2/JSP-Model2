@@ -107,10 +107,12 @@
                             		<i class="input-helper"></i>
                             	</label>
                             </div>
-                            <p style="font-size: 13px; color: #90949c; margin-bottom: 5px; padding-left: 10px;">
-                            	- 리워드가 다른 판매처에서 유통된 적이 있다면 리워드로 제공할 수 없습니다.<br>
-								- 기존에 유통하던 제품/서비스에 비해 개선된 점이 있다면 아래에 상세하게 작성해주세요.</p>
-                            <textarea rows="2" cols="" class="form-control" name="q1_differ" id="q1_differ" readonly="readonly">${bean.differ}</textarea>
+                            <c:if test="${bean.q1 eq yes}">
+	                            <p style="font-size: 13px; color: #90949c; margin-bottom: 5px; padding-left: 10px;">
+	                            	- 리워드가 다른 판매처에서 유통된 적이 있다면 리워드로 제공할 수 없습니다.<br>
+									- 기존에 유통하던 제품/서비스에 비해 개선된 점이 있다면 아래에 상세하게 작성해주세요.</p>
+	                            <textarea rows="2" cols="" class="form-control" name="q1_differ" id="q1_differ" readonly="readonly">${bean.differ}</textarea>
+                            </c:if>
                           </div>
                         </div>
                         </div>

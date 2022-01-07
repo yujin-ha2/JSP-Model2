@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>메이커 스튜디오</title>
     <c:set var="contextPath" value="${pageContext.request.contextPath}/aroma"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/ionicons/dist/css/ionicons.css">
     <link rel="stylesheet" href="${contextPath}/assets/vendors/iconfonts/flag-icon-css/css/flag-icon.min.css">
@@ -14,7 +15,7 @@
     <link rel="stylesheet" href="${contextPath}/assets/vendors/css/vendor.bundle.addons.css">
     <link rel="stylesheet" href="${contextPath}/assets/css/shared/style.css">
     <link rel="stylesheet" href="${contextPath}/assets/css/demo_1/style.css">
-    <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script> -->
     <script type="text/javascript">
     function view_div() {
         document.getElementById("#q1div").style.display = 'block';
@@ -43,7 +44,7 @@
 			return false;
 		}
 		
-		if($('input:radio[id=no]').is(':checked')){
+		if($('input:radio[id=yes]').is(':checked')){
 			if (q1_differ.value.length == 0) {
 				alert("Q1 내용을 입력하세요!");
 				q1_differ.focus();

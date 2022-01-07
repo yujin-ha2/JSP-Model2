@@ -41,6 +41,10 @@ public class makerEasyRegAction implements Action {
 			return null;
 		}
 		
+		HttpSession session=request.getSession(); //技记按眉 积己
+		session.removeAttribute("authority");
+		session.setAttribute("authority", "魄概磊");
+		
 		ActionForward forward=new ActionForward();
 		forward.setRedirect(true);
 		forward.setPath("myprojectList.on");

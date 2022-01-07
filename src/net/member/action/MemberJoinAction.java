@@ -42,7 +42,7 @@ public class MemberJoinAction implements Action {
 		
 		ActionForward forward=new ActionForward();
 		forward.setRedirect(true);
-		forward.setPath("./MemberLogin.me");
+		forward.setPath("./login.me");
 		
 		return forward;
 	}

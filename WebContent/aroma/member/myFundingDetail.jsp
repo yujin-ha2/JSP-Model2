@@ -35,12 +35,12 @@
 	
   <!--================Order Details Area =================-->
     <section class="order_details section-margin--small">
-    <div class="maincontainer" style="padding: 0 120px;">    	
+    <div class="maincontainer" style="padding: 0 120px;">    	 
    		<div style="padding-bottom: 160px; max-width: 1000px; margin: 0 auto;">
     		<div style="padding: 24px 24px; margin: 0 auto; background-color: #F5F7FA;"> <!-- 첫번째블럭 -->
  	  			<p style="color:#60656a; margin-bottom: 12px;">펀딩 / ${history.categoryNm}</p>
  	  			<p style="color:#60656a; margin-bottom: 6px; font-size: 12px; line-height: 20px;"><i class="fas fa-circle" style="margin-right: 5px;"></i>${history.statusNm}</p>
- 	  			<a href="#">
+ 	  			<a href="${contextPath}/fundingStory.do?fundingId=${history.fundingId}">
  	  				<p style="color:#60656a; margin-bottom: 8px; font-size: 17px; font-weight: 700; text-decoration: underline;">${history.title}</p>
  	  			</a>
  	  			<p style="color: #60656a;">by <a href="#" style="text-decoration: underline;color:inherit;">${history.makerName}</a></p>

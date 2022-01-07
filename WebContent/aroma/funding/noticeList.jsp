@@ -31,11 +31,28 @@
 		searchForm.submit();
 	}
   </script>
+  <style type="text/css">
+  	#wrapper{
+	  display: flex; 
+	  min-height: 90%; 
+	  flex-direction: column;
+	}
+	.main-content{
+		flex: 1;
+	}
+
+	html,body{ 
+		margin:0; 
+		padding:0; 
+		width:100%; 
+		height:100%;
+	}
+  </style>
 </head>
 <body>
+<div id="wrapper">
 <jsp:include page="../top1.jsp" />
-	
-<section class="product_description_area">
+<section class="" style="margin-top: 60px;">
 	<div class="maincontainer" style="padding: 0 150px;">
         <h3 style="text-align: left">공지사항</h3>
         <form action="noticeList.do" name="searchForm">
@@ -105,8 +122,10 @@
         </form>
 	</div>
 </section>			
-
-<jsp:include page="../bottom.jsp" />
+</div>
+<footer>
+	<jsp:include page="../bottom.jsp" />
+</footer>
 
 </body>
 </html>

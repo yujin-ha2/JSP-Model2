@@ -35,7 +35,7 @@ public class ChangeAccountStatusAction extends HttpServlet implements Action{
 		}
 		
 		forward.setRedirect(true);
-		forward.setPath("AdminMemberGeneralListAction.ad");
+		forward.setPath("MemberManagement.ad");
 		
 		return forward;
 	}

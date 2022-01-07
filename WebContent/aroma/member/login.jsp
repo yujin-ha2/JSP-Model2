@@ -13,7 +13,6 @@
   <link rel="stylesheet" href="${contextPath}/vendors/fontawesome/css/all.min.css">
   <link rel="stylesheet" href="${contextPath}/vendors/themify-icons/themify-icons.css">
   <link rel="stylesheet" href="${contextPath}/css/style.css">
-  <script type="text/javascript" src="${contextPath}/login.js"></script>
 </head>
 <body>
 	<jsp:include page="../top1.jsp" />

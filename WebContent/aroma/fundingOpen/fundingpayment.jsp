@@ -67,7 +67,7 @@
             <div class="row">
              <div class="col-md-3 grid-margin">
                   <div class="card-body">
-                    <h4 class="card-title" style="font-size: 33px; font-weight: 700; margin-bottom: 10px;">펀딩 현황</h4>
+                    <h4 class="card-title" style="font-size: 33px; font-weight: 700; margin-bottom: 10px;">결제 현황</h4>
                     <p class="card-description"></p>
                   </div>
               </div>
@@ -99,6 +99,10 @@
                     <h4 class="card-title" style="margin-bottom: 5px;">펀딩 진행 기간</h4>
                     <fmt:formatDate value="${report.startDate}" var="start" pattern="yyyy-MM-dd"/>
                     <fmt:formatDate value="${report.endDate}" var="end" pattern="yyyy-MM-dd"/>
+                    <fmt:parseDate value="${report.startDate}" var="strPlanDate" pattern="yyyy-MM-dd"/>
+					<fmt:parseNumber value="${strPlanDate.time / (1000*60*60*24)}" integerOnly="true" var="startDate"></fmt:parseNumber>
+					<fmt:parseDate value="${report.endDate}" var="endPlanDate" pattern="yyyy-MM-dd"/>
+					<fmt:parseNumber value="${endPlanDate.time / (1000*60*60*24)}" integerOnly="true" var="endDate"></fmt:parseNumber>
                     <p style="font-size: 17px; font-weight: 700; margin-bottom: 15px;">${start} - ${end} (${endDate - startDate }일간 진행)</p>	
                     <p style="font-size: 17px; font-weight: bold; margin-bottom: 0px;">${fundingStatus}</p>
                     <p></p>

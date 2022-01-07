@@ -30,9 +30,25 @@
     #subTab  .nav-link :hover{
         color: navy;
     }
+    #wrapper{
+	  display: flex; 
+	  min-height: 90%; 
+	  flex-direction: column;
+	}
+	.main-content{
+		flex: 1;
+	}
+
+	html,body{ 
+		margin:0; 
+		padding:0; 
+		width:100%; 
+		height:100%;
+	}
   </style>
 </head>
 <body>
+<div id="wrapper">
 	<ul class="nav nav-tabs" id="myTab" role="tablist" style="background-color: #3549EC;">
 		<li class="nav-item">
             <a class="nav-link active" href="${contextPath}/MemberManagement.ad" aria-selected="false">회원 관리</a>
@@ -56,7 +72,7 @@
 		</li>
 	</ul>
     <!-- start 관리자 메뉴 -->
-    <section class="order_details section-margin--small">
+    <section class="order_details section-margin--small main-content">
     	<div class="container">
            	<h3 style="text-align: left">회원관리</h3>
            	<p style="text-align: left; margin-top: 15px">회원의 활동 상태 및 권한을 관리하는 페이지입니다.</p>
@@ -211,9 +227,9 @@
 			</div>
 		</div>
 	</section>
-
-
+</div>
+<footer>
   <jsp:include page="../bottom.jsp" />
-
+</footer>
 </body>
 </html>

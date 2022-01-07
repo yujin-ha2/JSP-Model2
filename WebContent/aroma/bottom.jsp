@@ -4,10 +4,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+
+</style>
 </head>
 <body>
   <!--================ Start footer Area  =================-->  
-    <footer class="footer">
         <div class="footer-area"  style="padding: 40px 20px; padding-left:200px; align="center">
         	<div class="row">
 			  <div class="col-sm">
@@ -26,7 +28,6 @@
 			  </div>
 			</div>
        </div>
-    </footer>
     <!--================ End footer Area  =================-->
 
 </body>

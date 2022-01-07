@@ -70,6 +70,8 @@
 	   		var html = "";
 	   		$.each(list, function(j){
 	   			console.log(list[j].fundingId);
+	   			var totalRevenue = list[j].totalRevenue.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+	   			console.log("totalRevenue: " + totalRevenue);
 	   			html += "<div class='col-md-3'>";
 	   			html += "<div class='card-deck'>";
 	   			html += "<div class='card' style='border: none;'>";
@@ -88,10 +90,10 @@
 	   			html += "</span></div></div>";
 	   			html += "<div style='display:block; height: 3px; width: 100%; background-color: #00b2b2;'></div>";
 	   			html += "<span style='font-size: 17px; color:#00b2b2; font-weight: 700;'>"+list[j].achievement+"%</span>&nbsp;";
-	   			html += "<span style='font-size: 14px; color:#90949c; font-weight: 500; '>"+list[j].totalRevenue+"</span>";
+	   			html += "<span style='font-size: 14px; color:#90949c; font-weight: 500; '>"+totalRevenue+"</span>";
 	   			
 	   			if(list[j].status == 'start'){
-	   				html += "<span style='float: right; font-size: 14px; font-weight: 500; color:#90949c;'>"+list[j].dayDiff+"남음</span>";
+	   				html += "<span style='float: right; font-size: 14px; font-weight: 500; color:#90949c;'>"+list[j].dayDiff+"일 남음</span>";
 	   			}else{
 	   				html += "<span style='float: right; font-size: 14px; font-weight: 500; color:#90949c;'>"+list[j].statusName+"</span>";
 	   			}
@@ -184,7 +186,8 @@
 								
 								<div style="display:block; height: 3px; width: 100%; background-color: #00b2b2;"></div>
 								<span style="font-size: 17px; color:#00b2b2; font-weight: 700;">${funding.achievement}%</span>
-								<span style="font-size: 14px; color:#90949c; font-weight: 500; ">${funding.totalRevenue}</span>
+								<fmt:formatNumber var="totalRevenue" value="${funding.totalRevenue}" pattern="#,###"/>
+								<span style="font-size: 14px; color:#90949c; font-weight: 500; ">${totalRevenue}</span>
 								<c:set var="detail" value="${funding.statusName}"/>
 								<c:if test="${funding.status == 'start'}">
 									<c:set var="detail" value="${funding.dayDiff}일 남음"/>

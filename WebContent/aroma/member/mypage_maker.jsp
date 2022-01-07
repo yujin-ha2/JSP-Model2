@@ -88,8 +88,8 @@ function popup_profile(){
 									  		<c:set var="title" value="제목을 입력해주세요."></c:set>
 								  		</c:otherwise>
 								  	</c:choose>
-								  	<div class="col-md-3">
-								    	<img src="${contextPath}/img/${mainImg}" style="height:140px; width: 190px;">
+								  	<div class="col-md-3" onclick="location.href='${contextPath}/fundingStory.do?fundingId=${list.fundingId}';" style="cursor: pointer;">
+								    	<img src="${pageContext.request.contextPath}/fundingUpload/${mainImg}" style="height:140px; width: 190px;">
 						    	  	  	<div style="padding-top: 10px;">
 						    	  	  		<div style="height: 55px;">
 					  		    	  	  		<h6 style="padding-left: 5px;">${title}</h6>
@@ -109,14 +109,7 @@ function popup_profile(){
 			      		</div>
 			      		<hr>
 			      		<div class="row">
-							<div class="col-6">답변하기<a style="float: right" href="#">&gt;</a></div>
-						  	<div class="col-6" onclick="location.href='${contextPath}/fundingOpen/makerStudioMain.jsp'" style="cursor: pointer;">
-						  		메이커 스튜디오<span style="float: right; color: blue;">&gt;</span>
-						  	</div>
-						</div>
-						<hr>
-						<div class="row">
-							<div class="col-6" onclick="location.href='${contextPath}/myFollowList.me?type=maker';" style="cursor: pointer;">
+						  	<div class="col-6" onclick="location.href='${contextPath}/myFollowList.me?type=maker';" style="cursor: pointer;">
 				  			나의 팔로워<a style="float: right" href="${contextPath}/myFollowList.me?type=maker">&nbsp; &gt;</a>
 				  			</div>
 						</div>

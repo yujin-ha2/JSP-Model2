@@ -15,12 +15,28 @@
   <link rel="stylesheet" href="${contextPath}/vendors/themify-icons/themify-icons.css">
   <link rel="stylesheet" href="${contextPath}/vendors/linericon/style.css">
   <link rel="stylesheet" href="${contextPath}/css/style.css">
-  <script type="text/javascript">
-  </script>
+  <style type="text/css">
+  	#wrapper{
+	  display: flex; 
+	  min-height: 90%; 
+	  flex-direction: column;
+	}
+	.main-content{
+		flex: 1;
+	}
+
+	html,body{ 
+		margin:0; 
+		padding:0; 
+		width:100%; 
+		height:100%;
+	}
+  </style>
 </head>
 <body>
+<div id="wrapper">
 <jsp:include page="../top1.jsp" />
-	
+
 <section class="product_description_area">
 	<div class="maincontainer" style="padding: 0 150px;">
         <div class="card gedf-card">
@@ -48,8 +64,10 @@
        </div>
 	</div>
 </section>			
-
-<jsp:include page="../bottom.jsp" />
+</div>
+<footer>
+	<jsp:include page="../bottom.jsp" />
+</footer>
 
 </body>
 </html>

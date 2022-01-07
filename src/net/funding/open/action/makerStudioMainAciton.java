@@ -32,8 +32,10 @@ public class makerStudioMainAciton implements Action {
 		StatusName statusName = new StatusName();
 		
 		if(fundingId == 0) {
+			System.out.println("before_fundingId : " + fundingId);
 			//프로젝트 생성
 			fundingId = openDao.insertNewProject(id);
+			System.out.println("after_fundingId : " + fundingId);
 			
 			status = "prepare";
 			statusList.add("prepare");

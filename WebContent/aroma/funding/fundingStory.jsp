@@ -55,7 +55,10 @@
     function orderFunding() {
     	if(${empty sessionScope.id}){
 	   		alert("로그인 후에 이용해주세요.");
-		}else{
+		}else if('${report.status}' == 'success' || '${report.status}' == 'fail'){
+			alert('이미 종료된 펀딩입니다.');
+		}
+		else{
 			var UlLength = $("#productsToBuy ul").length;
 	    	if(UlLength == 0){
 	    		alert("리워드 옵션을 먼저 선택해주세요");
@@ -205,7 +208,8 @@
 											<c:set var="followClass" value="btn btn-outline-primary"/>
 											<c:set var="followText" value="-팔로우취소"/>
 										</c:if>
-										<button type="button" id="qnaBtn" class="btn btn-outline-primary" style="padding: 9px 16px; width: 49%;">문의하기</button>
+										<button type="button" id="qnaBtn" class="btn btn-outline-primary" style="padding: 9px 16px; width: 49%;"
+												onclick="location.href='${contextPath}/CompanyDetail.do?makerId=${maker.userId}';">메이커페이지</button>
 										<button type="button" id="followBtn" class="${followClass}" style="padding: 9px 16px; width: 49%;">${followText}</button>
 									</div>
 								</div>
@@ -223,7 +227,8 @@
 								<div id="productsToBuy">
 								</div>
 							</form>
-							<input type="button" id="orderBtn" name="orderBtn" class="btn btn-primary" style="cursor:pointer; font-size:18px; border: none; width:100%; height:48px; margin-top: 15px;" value="펀딩하기">
+							<input type="button" id="orderBtn" name="orderBtn" class="btn btn-primary" value="펀딩하기"
+									style="cursor:pointer; font-size:18px; border: none; width:100%; height:48px; margin-top: 15px;">
 					</div> 
 				</div><!-- 우측 div 끝 -->
 				</div>

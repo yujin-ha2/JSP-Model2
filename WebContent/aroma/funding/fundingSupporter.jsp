@@ -58,7 +58,10 @@
     function orderFunding() {
     	if(${empty sessionScope.id}){
 	   		alert("로그인 후에 이용해주세요.");
-		}else{
+		}else if('${report.status}' == 'success' || '${report.status}' == 'fail'){
+			alert('이미 종료된 펀딩입니다.');
+		}
+		else{
 			var UlLength = $("#productsToBuy ul").length;
 	    	if(UlLength == 0){
 	    		alert("리워드 옵션을 먼저 선택해주세요");
@@ -140,8 +143,9 @@
 										</span>
 										<div style="margin-left: 62px; padding-right: 16px; font-size: 17px;">
 											<p style="margin-bottom: 0;">
+												<fmt:formatNumber var="totalAmount" value="${supporter.totalAmount}" pattern="#,###"/>
 												<button style="color: #0d0f12; font-weight: 500; background: none; border: 0 none; padding: 0;">${supporter.userId}</button>님이&nbsp;
-												<strong>${supporter.totalAmount}원 펀딩</strong>으로 참여 하셨습니다.
+												<strong>${totalAmount}원 펀딩</strong>으로 참여 하셨습니다.
 											</p>
 											<fmt:formatDate var="orderDate" value="${supporter.orderDate}" pattern="yyyy-MM-dd"/>
 											<em style="font-style: normal; font-size: 12px;">${orderDate}</em>
@@ -209,7 +213,8 @@
 											<c:set var="followClass" value="btn btn-outline-primary"/>
 											<c:set var="followText" value="-팔로우취소"/>
 										</c:if>
-										<button type="button" id="qnaBtn" class="btn btn-outline-primary" style="padding: 9px 16px; width: 49%;">문의하기</button>
+										<button type="button" id="qnaBtn" class="btn btn-outline-primary" style="padding: 9px 16px; width: 49%;"
+												onclick="location.href='${contextPath}/CompanyDetail.do?makerId=${maker.userId}';">메이커페이지</button>
 										<button type="button" id="followBtn" class="${followClass}" style="padding: 9px 16px; width: 49%;">${followText}</button>
 									</div>
 								</div>

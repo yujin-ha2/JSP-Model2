@@ -24,7 +24,7 @@ public class makerEasyRegFormAction implements Action {
 			PrintWriter out=response.getWriter();
 			out.println("<script>");
 			out.println("alert('먼저 로그인을 해주세요.');");
-			out.println("location.href='MemberLogin.me';");
+			out.println("location.href='login.me';");
 			out.println("</script>");
 			out.close();
 			return null;

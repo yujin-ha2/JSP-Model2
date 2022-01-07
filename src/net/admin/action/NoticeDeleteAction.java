@@ -20,24 +20,20 @@ public class NoticeDeleteAction implements Action {
 		int noticeId = Integer.parseInt(request.getParameter("noticeId"));
 		
 		int result = new adminDAO().deleteNotice(noticeId);
-		String message = (result==0) ? "공지사항 게시글 삭제에 실패하였습니다" : "공지사항 게시글이 삭제되었습니다";
-		String nextPage = (result==0) ? "history.back();" : "location.href='NoticeList.ad';";
-		
-		PrintWriter out=response.getWriter();
-		out.println("<script>");
-		out.println("alert("+message+");");
-		out.println(nextPage);
-		out.println("</script>");
-		out.close();
-		
-		return null;
-		
-		/*
+		if(result == 0) {
+			PrintWriter out=response.getWriter();
+			out.println("<script>");
+			out.println("alert('공지사항 게시글 삭제에 실패하였습니다');");
+			out.println("history.back();");
+			out.println("</script>");
+			out.close();
+			return null;
+		}
+
 		ActionForward forward=new ActionForward();
 		forward.setRedirect(true);
 		forward.setPath("NoticeList.ad");
 		
 		return forward;
-		*/
 	}
 }

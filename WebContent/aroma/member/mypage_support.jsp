@@ -78,10 +78,6 @@
 					</div>
 					<hr>
 					<div class="row">
-				  		<div class="col-6">메시지<a style="float: right" href="#">&gt;</a></div>
-					</div>
-					<hr>
-					<div class="row">
 				  		<div class="col-6">
 				  			<img src="./img/banner1.png" style="width: 100%; height: 100%; object-fit: cover;">
 			  			</div>

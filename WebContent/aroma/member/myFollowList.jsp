@@ -36,10 +36,10 @@
 					<div class="row" style="padding: 5px 15px;">
 					  <div style="width:150px;" align="center" >
 					  	<!-- c:if 마지막에 빼야함! 원래는 이미지 무조건 있음 -->
-					  	<c:if test="${v.profile eq null}">	
-							<img id="thumbnail" src="${pageContext.request.contextPath}/profileUpload/noImg.PNG" style="border-radius: 100px; width: 100px; height: 100px;">
+					  	<c:if test="${maker.profile eq null}">	
+							<img id="thumbnail" src="${pageContext.request.contextPath}/profileUpload/noImage.png" style="border-radius: 100px; width: 100px; height: 100px;">
 						</c:if>
-						<c:if test="${v.profile ne null}">
+						<c:if test="${maker.profile ne null}">
 					  	<img alt="" src="${pageContext.request.contextPath}/profileUpload/${maker.profile}" width="100px" height="100px" style="border-radius: 100px;">
 					  	</c:if>
 					  </div>

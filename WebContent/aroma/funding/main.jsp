@@ -25,7 +25,7 @@
 	    <div class="swiper-wrapper">
 		    <c:forEach var="banner" items="${banners}">
 			      <div class="swiper-slide" style="cursor: pointer;">
-			        <div class="slide-inner slide-bg-image" data-background="${pageContext.request.contextPath}/bannerUpload/${banner.img}" onclick="location.href='${banner.link}';"></div>
+			        <div class="slide-inner slide-bg-image" data-background="${pageContext.request.contextPath}/bannerUpload/${banner.savedFileName}" onclick="location.href='${banner.link}';"></div>
 			      </div>
 		     </c:forEach>
         </div>

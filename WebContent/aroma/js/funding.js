@@ -154,18 +154,15 @@ function minusProduct(LiName, defaultPrice) {
 function excludeProduct(LiName) {
 	var name = LiName.id;
 	var LiLength = $("#productToBuyUL li").length;
-	alert("length: " + LiLength);
+	
 	if(LiLength == 1){
 		//div empty
 		$("#productsToBuy").empty();
 		$("#totalAmount").remove();
-		alert("empty");
-		
 	}else if(LiLength > 1){
 		//해당 <li>만 삭제
 		$("#"+name).remove();
 		changeProductToBuy();
-		alert("remove");
 	}
 }
 
