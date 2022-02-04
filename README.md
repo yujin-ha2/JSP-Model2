@@ -12,8 +12,12 @@
 - 관리자 페이지: 회원관리/프로젝트 승인관리/배너관리/공지사항 관리
 
 ## 데모 영상
-- 서포터   
+[서포터]   
+
 https://user-images.githubusercontent.com/24905477/148532741-9fe26a3a-5da8-421c-b1b3-3763b4c23ee5.mp4
-- 메이커   
+
+
+[메이커, 관리자]   
+
 https://user-images.githubusercontent.com/24905477/148532777-6881a4fd-b228-457e-892b-5f3bb4acfd0a.mp4
 
